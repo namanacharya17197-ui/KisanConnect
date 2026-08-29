@@ -1,0 +1,61 @@
+// AI Live Mandi vs Kisan Setu Rate Announcements & Broadcast Feeds
+const RATE_ANNOUNCEMENTS = [
+  {
+    id: "mango_sakhigopal",
+    crop: "Alphonso / Amrapali Mango",
+    market: "Sakhigopal & Pipili Cluster",
+    setuRate: 88,
+    mandiRate: 52,
+    gainPct: "+69.2%",
+    trend: "Bullish",
+    unit: "kg",
+    timestamp: "Live: 5 mins ago",
+    audioHindi: "किसान सेतु लाइव मंडी भाव: साखीगोपाल में आम्रपाली आम का सेतू मूल्य अट्ठासी रुपये प्रति किलो है, जबकि पारंपरिक मंडी में केवल बावन रुपये मिल रहा है। किसान भाइयों को छत्तीस रुपये प्रति किलो का सीधा अधिक लाभ मिल रहा है!",
+    audioOdia: "କୃଷକ ସେତୁ ଲାଇଭ୍ ଦର ଘୋଷଣା: ସାକ୍ଷୀଗୋପାଳରେ ଆମ୍ବର ସେତୁ ମୂଲ୍ୟ ₹୮୮/କେଜି ଥିବାବେଳେ ମଣ୍ଡିରେ ₹୫୨ ମିଳୁଛି। ଚାଷୀ ଭାଇଙ୍କୁ କିଲୋ ପ୍ରତି ₹୩୬ ଅଧିକ ଲାଭ!",
+    audioEnglish: "Kisan Setu Live Rate Broadcast: Amrapali Mango at Sakhigopal is ₹88/kg on Setu versus ₹52/kg in traditional Mandi. Farmers capture +69.2% higher earnings direct to farmgate."
+  },
+  {
+    id: "banana_pipili",
+    crop: "Robusta Banana (Grand Naine)",
+    market: "Pipili FPO & Jatni",
+    setuRate: 33,
+    mandiRate: 16,
+    gainPct: "+106.3%",
+    trend: "High Demand",
+    unit: "kg",
+    timestamp: "Live: 12 mins ago",
+    audioHindi: "केला भाव अपडेट: पिपिली क्लस्टर में ग्रेड ए रोबस्टा केला सेतू पर तैंतीस रुपये प्रति किलो बिक रहा है, जबकि मंडी में केवल सोलह रुपये का भाव है। सीधा दोगुना मुनाफा!",
+    audioOdia: "କଦଳୀ ଲାଇଭ୍ ରେଟ୍: ପିପିଲିରେ ଗ୍ରେଡ୍ ଏ ରୋବଷ୍ଟା କଦଳୀ ₹୩୩/କେଜିରେ ବିକ୍ରି ହେଉଛି, ମଣ୍ଡି ତୁଳନାରେ ଦୁଇଗୁଣ ଲାଭ!",
+    audioEnglish: "Banana Market Update: Grade A Robusta Bananas trading at ₹33/kg on Kisan Setu compared to ₹16/kg mandi offer. Direct +106% premium for smallholders."
+  },
+  {
+    id: "tomato_khordha",
+    crop: "Hybrid Fresh Tomatoes",
+    market: "Khordha Krishi Kendra",
+    setuRate: 26,
+    mandiRate: 12,
+    gainPct: "+116.7%",
+    trend: "Surge",
+    unit: "kg",
+    timestamp: "Live: 18 mins ago",
+    audioHindi: "टमाटर लाइव रेट: खोर्धा क्षेत्र में हाइब्रिड टमाटर सेतू पर छब्बीस रुपये प्रति किलो है, जबकि स्थानीय मंडी में केवल बारह रुपये दिया जा रहा है।",
+    audioOdia: "ଟମାଟୋ ଦର ସୂଚନା: ଖୋର୍ଦ୍ଧାରେ ଟମାଟୋ ସେତୁରେ ₹୨୬/କେଜି, ପାରମ୍ପରିକ ମଣ୍ଡିରେ ମାତ୍ର ₹୧୨।",
+    audioEnglish: "Tomato Price Alert: Farmgate certified tomatoes clearing at ₹26/kg on Setu vs ₹12/kg distress mandi prices."
+  },
+  {
+    id: "chana_jatni",
+    crop: "Desi Chana (Pulse)",
+    market: "Khordha Sangh Buffer",
+    setuRate: 76,
+    mandiRate: 62,
+    gainPct: "+22.5%",
+    trend: "Steady",
+    unit: "kg",
+    timestamp: "Live: 25 mins ago",
+    audioHindi: "देसी चना भाव: खोर्धा फार्मगेट पर देसी चना छिहत्तर रुपये प्रति किलो पर सुरक्षित एस्क्रो में खरीदा जा रहा है।",
+    audioOdia: "ଦେଶୀ ଚଣା ଦର: ଖୋର୍ଦ୍ଧାରେ ଚଣା ₹୭୬/କେଜିରେ ସ୍ମାର୍ଟ ଏସ୍କ୍ରୋ ଜରିଆରେ କ୍ରୟ ଚାଲିଛି।",
+    audioEnglish: "Desi Chana Pulse: Trading at ₹76/kg on Kisan Setu with zero credit delay."
+  }
+];
+
+window.RATE_ANNOUNCEMENTS = RATE_ANNOUNCEMENTS;
