@@ -19,7 +19,7 @@ function VoiceModal({
             </div>
             <div>
               <h3 className="font-extrabold text-base text-slate-900 leading-tight">
-                Kisan Vani AI (କୃଷକ ବାଣୀ)
+                Kisan Vani AI Voice Assistant
               </h3>
               <p className="text-[11px] text-slate-500 font-medium">
                 Bhashini Sovereign Indic Pipeline • Sub-190ms Latency Engine
@@ -55,10 +55,10 @@ function VoiceModal({
 
           <div>
             <p className="text-xs font-extrabold text-slate-800">
-              {voiceListening ? "Listening to your Indic voice query..." : "Tap to Speak (କଥା ହୁଅନ୍ତୁ / बोलिए / Speak)"}
+              {voiceListening ? "Listening to your voice query..." : "Tap to Speak (Ask Farm Prices, Fleet, or Quality)"}
             </p>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Supports Odia, Hindi, Bengali, Telugu, and Indian English
+              Supports English, Hindi, Odia, Bengali, and Telugu
             </p>
           </div>
         </div>
@@ -72,7 +72,7 @@ function VoiceModal({
               </span>
               <span className="text-[10px] text-emerald-700 font-mono">Synthesized in 148ms</span>
             </div>
-            <p className="font-bold text-slate-900 text-sm leading-relaxed font-odia">
+            <p className="font-bold text-slate-900 text-sm leading-relaxed">
               {voiceResponse.response}
             </p>
             <p className="text-[11px] text-slate-600 italic bg-white/70 p-2 rounded-lg border border-emerald-100">
@@ -84,7 +84,7 @@ function VoiceModal({
         {/* Preset Farm Queries */}
         <div className="space-y-2">
           <span className="text-[11px] text-slate-500 font-bold uppercase tracking-wider block">
-            Or tap an Indic farm query sample:
+            Or select a sample voice query:
           </span>
           <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
             {voiceSamplesList.map((sample, idx) => (
@@ -97,7 +97,7 @@ function VoiceModal({
                   <strong className="text-emerald-800 text-[11px]">{sample.langName}</strong>
                   <span className="text-[10px] text-slate-400 font-mono">{sample.voiceTag}</span>
                 </div>
-                <span className="text-slate-800 line-clamp-1 font-medium font-odia">
+                <span className="text-slate-800 line-clamp-1 font-medium">
                   "{sample.query}"
                 </span>
               </button>

@@ -1,13 +1,13 @@
 function Navbar({ activeTab, onTabChange }) {
   const tabs = [
-    { id: 'farmer', label: '🌾 किसान पोर्टल (Sell Produce)', sublabel: 'Add & Manage Lots', badge: 'Farmer Portal' },
-    { id: 'buyer', label: '🛒 खरीदार स्टोर (Buy Produce)', sublabel: 'E-Commerce Storefront', badge: 'Buyer Store' },
-    { id: 'bulk', label: '🏢 थोक B2B डेस्क (Bulk Buyers)', sublabel: 'Multi-Ton Contracts', badge: 'B2B Wholesale' },
-    { id: 'market', label: '🏪 मंडी तुलना (Value Wedge)', sublabel: 'RBI Margin Analysis', badge: 'RBI Benchmark' },
-    { id: 'scanner', label: '🔬 AI क्वालिटी जांच (Assaying)', sublabel: 'MobileNet CNN', badge: 'Edge CV' },
-    { id: 'logistics', label: '🚚 कोल्ड फ्लीट (OR-Tools)', sublabel: 'CVRPTW Routing', badge: 'Cold Chain' },
-    { id: 'forecast', label: '📈 फॉरवर्ड कॉन्ट्रैक्ट्स', sublabel: 'Pre-Harvest Locks', badge: 'Escrow Locks' },
-    { id: 'macro', label: '📊 मैक्रो रिसर्च डेटा', sublabel: 'RBI/NABARD Synthesis', badge: 'Empirical' }
+    { id: 'farmer', label: '🌾 Farmer Portal (Sell Produce)', sublabel: 'Add & Manage Lots', badge: 'Farmer Portal' },
+    { id: 'buyer', label: '🛒 Buyer Store (Buy Produce)', sublabel: 'E-Commerce Storefront', badge: 'Buyer Store' },
+    { id: 'bulk', label: '🏢 Bulk B2B Desk (Institutional)', sublabel: 'Multi-Ton Contracts', badge: 'B2B Wholesale' },
+    { id: 'market', label: '🏪 Mandi Analysis (Value Wedge)', sublabel: 'RBI Benchmark Comparison', badge: 'RBI Benchmark' },
+    { id: 'scanner', label: '🔬 AI Quality Assaying (CNN)', sublabel: 'MobileNet Spectral Scan', badge: 'Edge CV' },
+    { id: 'logistics', label: '🚚 Cold Fleet (OR-Tools)', sublabel: 'CVRPTW Route Engine', badge: 'Cold Chain' },
+    { id: 'forecast', label: '📈 Forward Contracts', sublabel: 'Pre-Harvest Escrow Locks', badge: 'Escrow Locks' },
+    { id: 'macro', label: '📊 Macro Research Data', sublabel: 'RBI / NABARD Synthesis', badge: 'Empirical' }
   ];
 
   return (

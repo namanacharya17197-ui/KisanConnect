@@ -45,26 +45,26 @@ function BuyerStoreTab({
         <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold border border-teal-400/30">
-            <span>🛒 खरीदार ई-कॉमर्स बाज़ार (Buyer E-Commerce Store)</span>
+            <span>🛒 Buyer E-Commerce Storefront</span>
             <span>•</span>
-            <span>Farmgate Direct Verified Quality</span>
+            <span>Farmgate Direct Verified Fresh Produce</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            सीधे किसान के खेत से ताज़ा, AI-प्रमाणित फसल खरीदें
+            Procure Fresh, AI-Certified Produce Directly From Farmers
           </h2>
           <p className="text-xs sm:text-sm text-teal-100/90 max-w-3xl leading-relaxed">
-            आढ़ती कमीशन और बीच के व्यापारियों का मुनाफा खत्म। 100% फार्मगेट-असैड फल, सब्जियां व दालें सीधे FPO से रीफर कोल्ड वैन में प्राप्त करें।
+            Eliminate commission agent markups and spoilage losses. Source 100% farmgate-assayed fruits, vegetables, and pulses directly from FPOs delivered in unbroken cold reefer chains.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-1 text-xs">
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-emerald-300 font-bold">100% Escrow</span> सुरक्षित भुगतान
+              <span className="text-emerald-300 font-bold">100% Smart Escrow</span> Guaranteed Delivery
             </div>
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-teal-300 font-bold">Cold Chain</span> बिना सड़े डिलीवरी
+              <span className="text-teal-300 font-bold">Cold Chain Reefer</span> Zero Spoilage
             </div>
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-amber-300 font-bold">Bulk Discount</span> थोक खरीदारों के लिए
+              <span className="text-amber-300 font-bold">Bulk Discounts</span> For Institutional Orders
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@ function BuyerStoreTab({
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
           <input
             type="text"
-            placeholder="फसल, किसान या जिला खोजें..."
+            placeholder="Search crop, farmer, or district..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
@@ -96,7 +96,7 @@ function BuyerStoreTab({
                   : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
               }`}
             >
-              {cat === 'All' ? 'सभी फसलें (All)' : cat}
+              {cat === 'All' ? 'All Commodities' : cat}
             </button>
           ))}
         </div>
@@ -108,17 +108,17 @@ function BuyerStoreTab({
             onChange={(e) => setSortBy(e.target.value)}
             className="px-3 py-1.5 rounded-xl text-xs border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none cursor-pointer"
           >
-            <option value="featured">Featured / लोकप्रिय</option>
+            <option value="featured">Featured Lots</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
-            <option value="qty">Max Quantity</option>
+            <option value="qty">Available Volume</option>
           </select>
 
           <button
             onClick={onOpenCart}
             className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
           >
-            <span>🛒 कार्ट ({cartItemCount})</span>
+            <span>🛒 Cart ({cartItemCount})</span>
           </button>
         </div>
       </div>
@@ -126,7 +126,6 @@ function BuyerStoreTab({
       {/* E-Commerce Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {filteredLots.map((lot) => {
-          const totalValue = lot.availableQty * lot.pricePerKg;
           return (
             <div
               key={lot.id}
@@ -164,19 +163,19 @@ function BuyerStoreTab({
                 {/* Price & Quantity Box */}
                 <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1.5">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500">उपलब्ध स्टॉक:</span>
+                    <span className="text-slate-500">Available Stock:</span>
                     <strong className="text-slate-900 text-xs">{lot.availableQty} {lot.unit}</strong>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500">सेतू मूल्य:</span>
+                    <span className="text-slate-500">Direct Price:</span>
                     <span className="text-base font-extrabold text-emerald-800">₹{lot.pricePerKg} / {lot.unit}</span>
                   </div>
                   <div className="flex justify-between text-slate-400 line-through text-[11px]">
-                    <span>मंडी आढ़ती रेट:</span>
+                    <span>Mandi Trader Offer:</span>
                     <span>₹{lot.mandiPrice} / {lot.unit}</span>
                   </div>
                   <div className="pt-1 border-t border-slate-200 text-[10px] text-teal-700 flex justify-between font-semibold">
-                    <span>थोक छूट (&gt;500kg):</span>
+                    <span>Wholesale (&gt;500kg):</span>
                     <span>₹{lot.bulkPricePerKg} / kg</span>
                   </div>
                 </div>
@@ -190,7 +189,7 @@ function BuyerStoreTab({
                     className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>🛒</span>
-                    <span>कार्ट में जोड़ें</span>
+                    <span>Add to Cart</span>
                   </button>
 
                   <button
@@ -198,7 +197,7 @@ function BuyerStoreTab({
                     className="flex-1 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 active:bg-emerald-950 text-white font-bold text-xs shadow-xs transition cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>⚡</span>
-                    <span>सीधा खरीदें</span>
+                    <span>Instant Buy</span>
                   </button>
                 </div>
               </div>
@@ -238,7 +237,7 @@ function BuyerStoreTab({
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  खरीद मात्रा चुनें (Quantity in kg):
+                  Select Purchase Volume (Quantity in kg):
                 </label>
                 <div className="flex items-center gap-2">
                   <input
@@ -256,19 +255,19 @@ function BuyerStoreTab({
               {/* Price Calculation */}
               <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5 text-xs text-slate-800">
                 <div className="flex justify-between">
-                  <span>फसल लागत ({modalQty} kg × ₹{selectedLotForModal.pricePerKg}):</span>
+                  <span>Produce Subtotal ({modalQty} kg × ₹{selectedLotForModal.pricePerKg}):</span>
                   <strong>₹{(modalQty * selectedLotForModal.pricePerKg).toLocaleString('en-IN')}</strong>
                 </div>
                 <div className="flex justify-between text-teal-700">
-                  <span>रीफर कोल्ड-चेन लॉजिस्टिक्स (7%):</span>
+                  <span>Reefer Cold Transit Logistics (7%):</span>
                   <span>₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 0.07).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-slate-500">
-                  <span>स्मार्ट एस्क्रो सुरक्षा शुल्क (2%):</span>
+                  <span>Smart Escrow Guarantee (2%):</span>
                   <span>₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 0.02).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="pt-2 border-t border-emerald-200 flex justify-between font-extrabold text-sm text-emerald-950">
-                  <span>कुल देय एस्क्रो राशि:</span>
+                  <span>Total Escrow Payable:</span>
                   <span className="text-base text-emerald-800">
                     ₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 1.09).toLocaleString('en-IN')}
                   </span>
@@ -284,7 +283,7 @@ function BuyerStoreTab({
               className="w-full py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>🔒</span>
-              <span>स्मार्ट एस्क्रो लॉक करें और आर्डर कन्फर्म करें</span>
+              <span>Lock Escrow & Confirm Order</span>
             </button>
           </div>
         </div>

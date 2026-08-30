@@ -3,7 +3,7 @@ function RateAnnouncementBar({ onOpenVoice }) {
   const { useState, useEffect } = React;
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [lang, setLang] = useState('hi');
+  const [lang, setLang] = useState('en');
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   // Auto-cycle announcements every 8 seconds
@@ -23,15 +23,15 @@ function RateAnnouncementBar({ onOpenVoice }) {
 
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      let text = currentItem.audioHindi;
-      let speechLang = 'hi-IN';
+      let text = currentItem.audioEnglish;
+      let speechLang = 'en-US';
 
-      if (lang === 'or') {
+      if (lang === 'hi') {
+        text = currentItem.audioHindi;
+        speechLang = 'hi-IN';
+      } else if (lang === 'or') {
         text = currentItem.audioOdia;
-        speechLang = 'hi-IN'; // Fallback for Indic engine
-      } else if (lang === 'en') {
-        text = currentItem.audioEnglish;
-        speechLang = 'en-IN';
+        speechLang = 'hi-IN';
       }
 
       const u = new SpeechSynthesisUtterance(text);
@@ -80,12 +80,20 @@ function RateAnnouncementBar({ onOpenVoice }) {
           {/* Lang Selector */}
           <div className="flex bg-slate-800/80 rounded-lg p-0.5 border border-slate-700 text-[11px]">
             <button
+              onClick={() => setLang('en')}
+              className={`px-2 py-0.5 rounded font-bold transition-all ${
+                lang === 'en' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              English
+            </button>
+            <button
               onClick={() => setLang('hi')}
               className={`px-2 py-0.5 rounded font-bold transition-all ${
                 lang === 'hi' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'text-slate-300 hover:text-white'
               }`}
             >
-              हिन्दी
+              Hindi
             </button>
             <button
               onClick={() => setLang('or')}
@@ -93,15 +101,7 @@ function RateAnnouncementBar({ onOpenVoice }) {
                 lang === 'or' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'text-slate-300 hover:text-white'
               }`}
             >
-              ଓଡ଼ିଆ
-            </button>
-            <button
-              onClick={() => setLang('en')}
-              className={`px-2 py-0.5 rounded font-bold transition-all ${
-                lang === 'en' ? 'bg-amber-500 text-slate-950 shadow-xs' : 'text-slate-300 hover:text-white'
-              }`}
-            >
-              Eng
+              Odia
             </button>
           </div>
 
@@ -115,7 +115,7 @@ function RateAnnouncementBar({ onOpenVoice }) {
             }`}
             title="Listen to Live AI Rate Announcement"
           >
-            <span>{isSpeaking ? '🔊 Speaking...' : '🎙️ रेट घोषणा सुनें'}</span>
+            <span>{isSpeaking ? '🔊 Speaking...' : '🎙️ Listen Rate Broadcast'}</span>
           </button>
         </div>
 

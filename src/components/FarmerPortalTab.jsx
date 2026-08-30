@@ -128,15 +128,15 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
         <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold border border-amber-400/30">
-            <span>🌾 किसान पोर्टल (Farmer Seller Portal)</span>
+            <span>🌾 Farmer Seller Portal</span>
             <span>•</span>
-            <span>Direct Farmgate Listing with Zero Broker Cuts</span>
+            <span>Direct Farmgate Listing with Zero Broker Deductions</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            अपनी फसल खुद लिस्ट करें और सीधा उचित मूल्य पाएं
+            List Your Produce & Capture Direct Fair Value
           </h2>
           <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
-            बिना किसी आढ़ती या बिचौलिये के अपनी फसल का लॉट जोड़ें। AI क्वालिटी ग्रेडिंग से अपनी फसल की ग्रेड जांचें और सीधे रिटेल व थोक खरीदारों (Bulk Buyers) को स्मार्ट एस्क्रो के तहत बेचें।
+            Eliminate commission agents and middleman deductions. List your harvest lots with verified quality parameters and sell directly to retail buyers and institutional bulk purchasers under protected smart escrow.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <button
@@ -144,14 +144,14 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-md transition cursor-pointer flex items-center gap-1.5"
             >
               <span>➕</span>
-              <span>नया फसल लॉट जोड़ें (Add New Lot)</span>
+              <span>Add New Produce Lot</span>
             </button>
             <button
               onClick={onOpenScanner}
               className="px-4 py-2 rounded-xl bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs border border-emerald-600 shadow-md transition cursor-pointer flex items-center gap-1.5"
             >
               <span>🔬</span>
-              <span>AI क्वालिटी स्कैनर चलाएं (AI Assaying)</span>
+              <span>Launch AI Quality Scanner</span>
             </button>
           </div>
         </div>
@@ -166,43 +166,43 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
                 Farmer Produce Entry Form
               </span>
               <h3 className="font-extrabold text-lg text-slate-900">
-                नया फसल लॉट लिस्ट करें (Add Produce Lot to Marketplace)
+                List New Produce Lot on Marketplace
               </h3>
               <p className="text-xs text-slate-500">
-                फसल का विवरण भरें। AI स्वतः आपके लिए उचित मूल्य व मंडी तुलना की गणना करेगा।
+                Enter your crop parameters. AI automatically computes fair valuation and mandi benchmark gain.
               </p>
             </div>
 
             {/* Quick Presets */}
             <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-xs text-slate-400 font-medium mr-1">त्वरित नमूना:</span>
+              <span className="text-xs text-slate-400 font-medium mr-1">Quick Presets:</span>
               <button
                 type="button"
                 onClick={() => handleSelectPreset('mango')}
                 className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
               >
-                🥭 आम (Mango)
+                🥭 Mango
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectPreset('banana')}
                 className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
               >
-                🍌 केला (Banana)
+                🍌 Banana
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectPreset('tomato')}
                 className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
               >
-                🍅 टमाटर (Tomato)
+                🍅 Tomato
               </button>
               <button
                 type="button"
                 onClick={() => handleSelectPreset('chana')}
                 className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
               >
-                🌱 चना (Chana)
+                🌱 Desi Chana
               </button>
             </div>
           </div>
@@ -213,7 +213,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    फसल का नाम (Crop Name):
+                    Crop Name:
                   </label>
                   <input
                     type="text"
@@ -221,23 +221,23 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
                     value={form.crop}
                     onChange={(e) => setForm({ ...form, crop: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="उदा. Alphonso Mango"
+                    placeholder="e.g. Alphonso Mango"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    श्रेणी (Category):
+                    Category:
                   </label>
                   <select
                     value={form.category}
                     onChange={(e) => setForm({ ...form, category: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                   >
-                    <option value="Fruits">फल (Fruits)</option>
-                    <option value="Vegetables">सब्जियां (Vegetables)</option>
-                    <option value="Pulses">दालें / अनाज (Pulses & Grains)</option>
-                    <option value="Spices">मसाले (Spices)</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Pulses">Pulses & Grains</option>
+                    <option value="Spices">Spices</option>
                   </select>
                 </div>
               </div>
@@ -245,7 +245,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    कुल मात्रा (Quantity in kg):
+                    Harvest Volume (Quantity in kg):
                   </label>
                   <input
                     type="number"
@@ -259,7 +259,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
                 <div>
                   <label className="block text-xs font-bold text-emerald-800 mb-1">
-                    सेतू पर आपका मूल्य (₹ / kg):
+                    Setu Direct Price (₹ / kg):
                   </label>
                   <input
                     type="number"
@@ -274,7 +274,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-500 mb-1">
-                    मंडी भाव बेंचमार्क (₹ / kg):
+                    Mandi Benchmark (₹ / kg):
                   </label>
                   <input
                     type="number"
@@ -290,32 +290,32 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    AI क्वालिटी ग्रेड (Assayed Grade):
+                    AI Quality Grade:
                   </label>
                   <select
                     value={form.grade}
                     onChange={(e) => setForm({ ...form, grade: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                   >
-                    <option value="Export Grade A+">Export Grade A+ (एक्सपोर्ट क्लास)</option>
-                    <option value="Domestic Grade A">Domestic Grade A (प्रीमियम रिटेल)</option>
-                    <option value="Processing Grade B">Processing Grade B (प्रोसेसिंग / पल्प)</option>
+                    <option value="Export Grade A+">Export Grade A+ (Premium Export)</option>
+                    <option value="Domestic Grade A">Domestic Grade A (Supermarket Quality)</option>
+                    <option value="Processing Grade B">Processing Grade B (Pulp / Processing)</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    शीतलन / स्टोरेज स्थिति (Cold Custody):
+                    Cooling & Storage Condition:
                   </label>
                   <select
                     value={form.coolingStatus}
                     onChange={(e) => setForm({ ...form, coolingStatus: e.target.value })}
                     className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                   >
-                    <option value="Pre-cooled at 6°C">Pre-cooled at 6°C (रीफर वैन तैयार)</option>
-                    <option value="Ventilated Crate Stack">Ventilated Crate Stack (हवादार क्रेट)</option>
-                    <option value="Hermetic Solar Silo">Hermetic Solar Silo (सोलर साइलो)</option>
-                    <option value="Hydro-cooled Buffer">Hydro-cooled Buffer (हाइड्रो-कूल्ड)</option>
+                    <option value="Pre-cooled at 6°C">Pre-cooled at 6°C (Reefer Ready)</option>
+                    <option value="Ventilated Crate Stack">Ventilated Crate Stack</option>
+                    <option value="Hermetic Solar Silo">Hermetic Solar Silo</option>
+                    <option value="Hydro-cooled Buffer">Hydro-cooled Buffer</option>
                   </select>
                 </div>
               </div>
@@ -323,7 +323,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    किसान / FPO का नाम:
+                    Farmer / FPO Name:
                   </label>
                   <input
                     type="text"
@@ -336,7 +336,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    फार्म लोकेशन (District, State):
+                    Farm Location (District, State):
                   </label>
                   <input
                     type="text"
@@ -350,7 +350,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  फसल की गुणवत्ता विवरण (Quality Notes):
+                  Quality Description & Notes:
                 </label>
                 <textarea
                   rows="2"
@@ -365,7 +365,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
                 className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-bold text-sm shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>🚀</span>
-                <span>फसल लॉट तुरंत लाइव मार्केट में जोड़ें (Publish Lot to Live Market)</span>
+                <span>Publish Produce Lot to Live Marketplace</span>
               </button>
             </div>
 
@@ -373,7 +373,7 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
             <div className="lg:col-span-5 bg-slate-50 p-5 sm:p-6 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
               <div className="space-y-3">
                 <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-                  📊 लाइव AI मूल्यांकन व किसान बचत (Live Valuation)
+                  📊 Live AI Valuation & Net Farmer Gain
                 </span>
 
                 <div className="aspect-16/9 rounded-xl overflow-hidden bg-slate-900 relative">
@@ -385,19 +385,19 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
                 <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">कुल लॉट वजन:</span>
+                    <span className="text-slate-500">Total Lot Volume:</span>
                     <strong className="text-slate-900">{form.qty} kg ({(Number(form.qty)/1000).toFixed(2)} Tonnes)</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">सेतू किसान मूल्य:</span>
+                    <span className="text-slate-500">Setu Direct Rate:</span>
                     <strong className="text-emerald-700">₹{form.pricePerKg} / kg</strong>
                   </div>
                   <div className="flex justify-between text-slate-400 line-through text-[11px]">
-                    <span>मंडी आढ़ती मूल्य:</span>
+                    <span>Mandi Trader Offer:</span>
                     <span>₹{form.mandiPrice} / kg</span>
                   </div>
                   <div className="pt-2 border-t border-slate-100 flex justify-between items-baseline">
-                    <span className="font-bold text-slate-700">कुल किसान भुगतान:</span>
+                    <span className="font-bold text-slate-700">Total Farmer Payout:</span>
                     <span className="text-lg font-black text-emerald-800">
                       ₹{totalCalculatedValue.toLocaleString('en-IN')}
                     </span>
@@ -407,22 +407,22 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
                 {/* Net Farmer Gain Highlight */}
                 <div className="p-3.5 rounded-xl bg-emerald-800 text-white text-xs space-y-1 shadow-sm">
                   <div className="flex justify-between items-center">
-                    <span className="text-emerald-200">पारंपरिक मंडी तुलना में सीधा लाभ:</span>
+                    <span className="text-emerald-200">Net Profit vs APMC Mandi:</span>
                     <span className="text-xs bg-amber-400 text-slate-950 px-2 py-0.5 rounded font-extrabold">
                       +{(((form.pricePerKg - form.mandiPrice) / (form.mandiPrice || 1)) * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div className="text-xl font-extrabold text-amber-300">
-                    +₹{extraGainCalculated.toLocaleString('en-IN')} शुद्ध बचत
+                    +₹{extraGainCalculated.toLocaleString('en-IN')} Extra Earnings
                   </div>
                   <p className="text-[10px] text-emerald-200">
-                    *स्मार्ट एस्क्रो द्वारा सुरक्षित। खरीदार के रीफर वैन सत्यापन के साथ तुरंत भुगतान बैंक खाते में।
+                    *Backed by cryptographic smart escrow. Instant release to bank account upon reefer arrival.
                   </p>
                 </div>
               </div>
 
               <div className="p-3 bg-teal-50 border border-teal-200 rounded-xl text-xs text-teal-900">
-                🔒 <strong>100% Escrow Backed:</strong> Once added, buyers can instantly buy or lock escrow for your lot.
+                🔒 <strong>100% Escrow Protection:</strong> Once published, buyers can instantly buy or lock escrow for your harvest lot.
               </div>
             </div>
           </form>
@@ -437,11 +437,11 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
               Farmer Inventory Dashboard
             </span>
             <h3 className="font-extrabold text-base text-slate-900">
-              आपके द्वारा लिस्ट किए गए सक्रिय लॉट ({lots.length} Active Lots)
+              Your Listed Harvest Lots ({lots.length} Active Lots)
             </h3>
           </div>
           <span className="text-xs font-mono text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-            Escrow Status: Live Active on National Network
+            Escrow Status: Live on National Network
           </span>
         </div>
 
@@ -468,11 +468,11 @@ function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner }) {
 
               <div className="p-2.5 rounded-lg bg-white text-xs space-y-1 border border-slate-100">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">कुल लॉट मूल्य:</span>
+                  <span className="text-slate-500">Total Lot Value:</span>
                   <strong>₹{(lot.qty * lot.pricePerKg).toLocaleString('en-IN')}</strong>
                 </div>
                 <div className="flex justify-between text-emerald-700 font-semibold">
-                  <span>अतिरिक्त लाभ:</span>
+                  <span>Farmer Gain:</span>
                   <span>{lot.farmerGain}</span>
                 </div>
               </div>

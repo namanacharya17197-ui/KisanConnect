@@ -24,7 +24,7 @@ function CartDrawer({
               <span className="text-xl">🛒</span>
               <div>
                 <h3 className="font-extrabold text-base text-slate-900">
-                  खरीदार कार्ट (Buyer Cart)
+                  Buyer Shopping Cart
                 </h3>
                 <p className="text-[11px] text-slate-500">
                   {cart.length} Farmgate Produce Items
@@ -44,8 +44,8 @@ function CartDrawer({
             {cart.length === 0 ? (
               <div className="py-16 text-center text-slate-400 space-y-2">
                 <div className="text-4xl">🌾</div>
-                <p className="font-bold text-slate-600 text-sm">आपकी कार्ट खाली है</p>
-                <p className="text-xs">खरीदार बाज़ार से ताज़ी फसल चुनें और कार्ट में जोड़ें।</p>
+                <p className="font-bold text-slate-600 text-sm">Your Cart is Empty</p>
+                <p className="text-xs">Browse the Buyer Store and add fresh farmgate produce to cart.</p>
               </div>
             ) : (
               cart.map((item) => (
@@ -63,7 +63,7 @@ function CartDrawer({
                     <button
                       onClick={() => onRemoveItem(item.id)}
                       className="text-rose-500 hover:text-rose-700 font-bold p-1 cursor-pointer"
-                      title="हटाएं"
+                      title="Remove"
                     >
                       🗑️
                     </button>
@@ -71,7 +71,7 @@ function CartDrawer({
 
                   {/* Quantity Stepper */}
                   <div className="flex justify-between items-center pt-2 border-t border-slate-200/60">
-                    <span className="text-slate-500 font-medium">मात्रा (kg):</span>
+                    <span className="text-slate-500 font-medium">Quantity (kg):</span>
                     <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 px-2 py-0.5">
                       <button
                         onClick={() => onUpdateQty(item.id, Math.max(10, item.qty - 10))}
@@ -101,19 +101,19 @@ function CartDrawer({
             <div className="p-5 border-t border-slate-200 bg-slate-50 space-y-3">
               <div className="space-y-1.5 text-xs">
                 <div className="flex justify-between text-slate-600">
-                  <span>फसल उप-योग (Produce Subtotal):</span>
+                  <span>Produce Subtotal:</span>
                   <span className="font-bold text-slate-900">₹{produceTotal.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-teal-700">
-                  <span>रीफर कोल्ड-चेन परिवहन (7%):</span>
+                  <span>Reefer Cold Transit Logistics (7%):</span>
                   <span>₹{logisticsFee.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-slate-500">
-                  <span>स्मार्ट एस्क्रो सुरक्षा गारंटी (2%):</span>
+                  <span>Smart Escrow Guarantee (2%):</span>
                   <span>₹{escrowFee.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="pt-2 border-t border-slate-200 flex justify-between font-extrabold text-sm text-emerald-950">
-                  <span>कुल देय राशि:</span>
+                  <span>Total Escrow Amount:</span>
                   <span className="text-base text-emerald-800">
                     ₹{grandTotal.toLocaleString('en-IN')}
                   </span>
@@ -128,7 +128,7 @@ function CartDrawer({
                 className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>🔒</span>
-                <span>स्मार्ट एस्क्रो चेकआउट (Pay ₹{grandTotal.toLocaleString('en-IN')})</span>
+                <span>Execute Smart Escrow Checkout (₹{grandTotal.toLocaleString('en-IN')})</span>
               </button>
 
               <p className="text-[10px] text-center text-slate-400">

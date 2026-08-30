@@ -14,7 +14,7 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-slate-300 text-xs font-medium">सक्रिय रोल (Active Role):</span>
+          <span className="text-slate-300 text-xs font-medium">Active Persona:</span>
           <select 
             value={userRole} 
             onChange={(e) => {
@@ -26,10 +26,10 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
             }}
             className="bg-emerald-900 text-white rounded-lg px-2.5 py-1 text-xs border border-emerald-700 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer"
           >
-            <option value="farmer">🌾 Farmer (फसल विक्रेता किसान)</option>
-            <option value="buyer">🛒 Retail Buyer (खरीदार बाज़ार)</option>
-            <option value="bulk">🏢 Bulk Institutional Buyer (थोक B2B)</option>
-            <option value="logistics">🚚 Reefer Fleet (शीत वाहन फ्लीट)</option>
+            <option value="farmer">🌾 Farmer (Produce Seller)</option>
+            <option value="buyer">🛒 Retail Buyer (Store Marketplace)</option>
+            <option value="bulk">🏢 Bulk Institutional Buyer (B2B Desk)</option>
+            <option value="logistics">🚚 Reefer Fleet (Cold Logistics)</option>
           </select>
         </div>
       </div>
@@ -65,7 +65,7 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 font-bold text-xs border border-slate-200 transition cursor-pointer relative"
           >
             <span>🛒</span>
-            <span className="hidden sm:inline">कार्ट</span>
+            <span className="hidden sm:inline">Cart</span>
             {cartItemCount > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold">
                 {cartItemCount}
@@ -82,7 +82,7 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
             <span className="text-base">🎙️</span>
             <span className="font-bold">Kisan Vani AI</span>
             <span className="hidden sm:inline bg-amber-800/40 px-1.5 py-0.5 rounded text-[10px] text-amber-100">
-              ଓଡ଼ିଆ / हिंदी / Eng
+              Voice Assistant
             </span>
           </button>
         </div>

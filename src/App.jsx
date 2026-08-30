@@ -5,7 +5,7 @@ function App() {
   const commodities = window.COMMODITIES || [];
   const cvPresets = window.CV_PRESETS || [];
 
-  const [tab, setTab] = useState('farmer'); // Default to Farmer Portal for easy adding, or buyer
+  const [tab, setTab] = useState('farmer'); // Default to Farmer Portal
   const [lots, setLots] = useState(initialLots);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -43,12 +43,12 @@ function App() {
       });
     }
     alert(
-      `🎉 बधाई हो किसान भाई!\n\n` +
-      `आपका फसल लॉट (${newLot.lot} - ${newLot.crop}) सफलतापूर्वक किसान सेतु लाइव मार्केट में जुड़ गया है।\n` +
-      `• कुल मात्रा: ${newLot.qty} kg\n` +
-      `• आपका तय मूल्य: ₹${newLot.pricePerKg}/kg\n` +
-      `• कुल लॉट मूल्य: ₹${(newLot.qty * newLot.pricePerKg).toLocaleString('en-IN')}\n\n` +
-      `अब खरीदार (Buyers & Bulk Buyers) सीधे आपकी फसल खरीद सकेंगे!`
+      `🎉 Congratulations Farmer Partner!\n\n` +
+      `Your harvest lot (${newLot.lot} - ${newLot.crop}) is now live on the Kisan Setu National Marketplace.\n` +
+      `• Total Volume: ${newLot.qty} kg\n` +
+      `• Direct Price: ₹${newLot.pricePerKg}/kg\n` +
+      `• Total Lot Value: ₹${(newLot.qty * newLot.pricePerKg).toLocaleString('en-IN')}\n\n` +
+      `Retail buyers and institutional bulk purchasers can now procure directly from your farmgate!`
     );
   };
 
@@ -86,11 +86,11 @@ function App() {
       window.confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
     }
     alert(
-      `🎉 स्मार्ट एस्क्रो चेकआउट सफल!\n\n` +
-      `• कुल जमा राशि: ₹${totalAmount.toLocaleString('en-IN')}\n` +
-      `• सुरक्षा: 100% Smart Escrow Locked\n` +
-      `• लॉजिस्टिक्स: Google OR-Tools द्वारा रीफर कोल्ड वैन आपके खेत के लिए शेड्यूल हो गई है।\n` +
-      `• किसान को भुगतान डिलीवरी और तापमान सत्यापन के तुरंत बाद UPI/e-RUPI से मिल जाएगा।`
+      `🎉 Smart Escrow Checkout Completed!\n\n` +
+      `• Escrow Amount Deposited: ₹${totalAmount.toLocaleString('en-IN')}\n` +
+      `• Security Guarantee: 100% Locked in Smart Escrow\n` +
+      `• Logistics Dispatch: Google OR-Tools solar reefer cold van scheduled for farmgate pickup.\n` +
+      `• Payout: Automated instant UPI/e-RUPI release to farmers upon cold gate quality scan.`
     );
     setCart([]);
   };
@@ -102,12 +102,12 @@ function App() {
       window.confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
     }
     alert(
-      `🎉 स्मार्ट एस्क्रो खरीद सफल!\n\n` +
-      `• लॉट: ${lot.lot} (${lot.crop})\n` +
-      `• किसान: ${lot.farmer} (${lot.location})\n` +
-      `• क्रय मात्रा: ${qty} kg\n` +
-      `• कुल एस्क्रो डिपॉजिट: ₹${total.toLocaleString('en-IN')}\n` +
-      `• डिलीवरी: रीफर कोल्ड वैन फार्मगेट से डिस्पैच!`
+      `🎉 Smart Escrow Procurement Executed!\n\n` +
+      `• Lot: ${lot.lot} (${lot.crop})\n` +
+      `• Producer: ${lot.farmer} (${lot.location})\n` +
+      `• Purchase Volume: ${qty} kg\n` +
+      `• Total Escrow Deposited: ₹${total.toLocaleString('en-IN')}\n` +
+      `• Transit: Temperature-controlled Reefer Van dispatched!`
     );
   };
 
@@ -137,7 +137,7 @@ function App() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(sample.response);
-        u.lang = sample.ttsLang || 'hi-IN';
+        u.lang = sample.ttsLang || 'en-US';
         u.rate = 0.95;
         window.speechSynthesis.speak(u);
       }
@@ -175,7 +175,7 @@ function App() {
 
       {/* Active Division View */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 sm:py-8 w-full">
-        {/* Section 1: Farmer Portal (Sell / किसान पोर्टल) */}
+        {/* Section 1: Farmer Portal (Sell Produce) */}
         {tab === 'farmer' && window.FarmerPortalTab && (
           <window.FarmerPortalTab 
             lots={lots}
@@ -185,7 +185,7 @@ function App() {
           />
         )}
 
-        {/* Section 2: Buyer E-Commerce Store (Buy / खरीदार स्टोर) */}
+        {/* Section 2: Buyer E-Commerce Store (Buy Produce) */}
         {tab === 'buyer' && window.BuyerStoreTab && (
           <window.BuyerStoreTab 
             lots={lots}

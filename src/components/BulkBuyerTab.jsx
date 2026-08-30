@@ -36,15 +36,15 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
         <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold border border-teal-400/30">
-            <span>🏢 B2B थोक खरीदार डेस्क (Institutional Bulk Procurement)</span>
+            <span>🏢 B2B Institutional Bulk Procurement Desk</span>
             <span>•</span>
             <span>Multi-Ton Farmgate Contracts</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            संस्थागत थोक खरीद व प्रत्यक्ष फार्मगेट एग्रीगेशन
+            Institutional Procurement & Direct Farmgate Aggregation
           </h2>
           <p className="text-xs sm:text-sm text-teal-100/90 max-w-3xl leading-relaxed">
-            सुपरमार्केट चेन, एक्सपोर्टर्स और फूड प्रोसेसर्स के लिए समर्पित B2B प्लेटफ़ॉर्म। FPO से सीधे सैकड़ों टन फसल बुक करें, Google OR-Tools रीफर फ्लीट शेड्यूल करें और 100% स्मार्ट एस्क्रो द्वारा सुरक्षित ट्रेड निष्पादित करें।
+            Dedicated B2B procurement platform for supermarket chains, exporters, and food processors. Book multi-ton harvest lots directly from FPOs with Google OR-Tools cold reefer fleet scheduling under smart legal escrow.
           </p>
         </div>
       </div>
@@ -57,14 +57,14 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               B2B Institutional RFP Generator
             </span>
             <h3 className="font-extrabold text-lg text-slate-900">
-              थोक खरीद कोटेशन व फॉरवर्ड कॉन्ट्रैक्ट बनाएं (Request for Quote)
+              Create Bulk Procurement Forward Contract (Request for Quote)
             </h3>
           </div>
 
           <form onSubmit={handleRfqSubmit} className="space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">कंपनी / खरीदार का नाम:</label>
+                <label className="block font-bold text-slate-700 mb-1">Company / Buyer Name:</label>
                 <input
                   type="text"
                   required
@@ -75,7 +75,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">फसल प्रकार (Target Crop):</label>
+                <label className="block font-bold text-slate-700 mb-1">Target Commodity:</label>
                 <select
                   value={rfq.crop}
                   onChange={(e) => setRfq({ ...rfq, crop: e.target.value })}
@@ -91,7 +91,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">मात्रा (Volume in Tonnes):</label>
+                <label className="block font-bold text-slate-700 mb-1">Volume (Tonnes):</label>
                 <input
                   type="number"
                   min="5"
@@ -104,7 +104,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               </div>
 
               <div>
-                <label className="block font-bold text-teal-800 mb-1">टारगेट खरीद मूल्य (₹ / kg):</label>
+                <label className="block font-bold text-teal-800 mb-1">Target Price (₹ / kg):</label>
                 <input
                   type="number"
                   min="10"
@@ -116,7 +116,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">डिलीवरी तिथि:</label>
+                <label className="block font-bold text-slate-700 mb-1">Delivery Date:</label>
                 <input
                   type="date"
                   required
@@ -128,7 +128,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
             </div>
 
             <div>
-              <label className="block font-bold text-slate-700 mb-1">डिलीवरी हब / वेयरहाउस:</label>
+              <label className="block font-bold text-slate-700 mb-1">Delivery Fulfillment Hub:</label>
               <input
                 type="text"
                 required
@@ -143,7 +143,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               className="w-full py-3 rounded-xl bg-teal-900 hover:bg-teal-950 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2"
             >
               <span>📑</span>
-              <span>थोक फॉरवर्ड कॉन्ट्रैक्ट जनरेट करें (Lock Institutional Escrow)</span>
+              <span>Generate Institutional Forward Contract (Lock Escrow)</span>
             </button>
           </form>
 
@@ -152,11 +152,11 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
               <div className="flex justify-between items-center">
                 <strong className="text-emerald-800 font-mono">{submittedRfq.id} Created!</strong>
                 <span className="px-2 py-0.5 bg-emerald-200 text-emerald-900 rounded font-bold text-[10px]">
-                  Smart Escrow Locked
+                  Smart Escrow Ready
                 </span>
               </div>
               <p>
-                <strong>{submittedRfq.buyerCompany}</strong> ने <strong>{submittedRfq.volumeTonnes} टन</strong> ({submittedRfq.crop}) के लिए <strong>{submittedRfq.totalEstValue}</strong> का एस्क्रो कॉन्ट्रैक्ट जारी किया।
+                <strong>{submittedRfq.buyerCompany}</strong> generated an escrow-backed contract for <strong>{submittedRfq.volumeTonnes} Tonnes</strong> ({submittedRfq.crop}) valued at <strong>{submittedRfq.totalEstValue}</strong>.
               </p>
             </div>
           )}
@@ -180,7 +180,7 @@ function BulkBuyerTab({ lots, onExecuteBulkContract }) {
                 </div>
                 <div className="flex justify-between text-slate-500 text-[11px]">
                   <span>FPO: {lot.fpo}</span>
-                  <span>स्टॉक: {(lot.availableQty / 1000).toFixed(1)} Tonnes</span>
+                  <span>Stock: {(lot.availableQty / 1000).toFixed(1)} Tonnes</span>
                 </div>
                 <button
                   onClick={() => alert(`B2B Order of ${lot.availableQty} kg locked for ${lot.crop}. Reefer fleet dispatch scheduled!`)}
