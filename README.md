@@ -1,58 +1,110 @@
-# 🌾 Kisan Setu • Sovereign AI Agricultural Ecosystem (v2.4)
+# 🌾 Kisan Setu (KisanConnect) • Sovereign AI Agritech & E-Commerce Platform (v2.4)
 
-Kisan Setu is an AI-disintermediated agritech platform that shifts value capture from mandi cartel intermediaries back to primary farmers (72%–88% share of consumer rupee).
+Kisan Setu is a full-featured, AI-disintermediated agritech and e-commerce ecosystem that connects farmers, retail buyers, and institutional bulk purchasers directly—eliminating APMC mandi cartel margins and returning 72%–88% of the consumer rupee back to smallholders.
 
 ---
 
-## 📂 Architecture & Modular Divisions
+## 🌟 Key Ecosystem Divisions & Features
 
-The monolithic application has been decomposed into modular divisions, components, datasets, and styles:
+1. **🌾 Farmer Portal (`FarmerPortalTab.jsx`)**:
+   - Add and customize harvest produce lots (crop name, variety, quantity in kg, price per kg, harvest date, cooling condition, photos, quality parameters).
+   - Real-time AI valuation engine and net profit comparison vs APMC mandi benchmarks (+30% to +80% gain).
+   - Live lot inventory dashboard with smart escrow tracking.
+
+2. **🛒 Buyer E-Commerce Storefront (`BuyerStoreTab.jsx`)**:
+   - Modern online store with search, category filtering (Fruits, Vegetables, Pulses), and price/volume sorting.
+   - Farmgate-verified produce cards with Brix sugar maturity, surface defect %, and direct farmer attribution.
+   - Wholesale volume discount tiers (>500kg).
+   - Instant Buy & Add to Cart capabilities.
+
+3. **🏢 Institutional Bulk B2B Desk (`BulkBuyerTab.jsx`)**:
+   - Multi-ton procurement orders for supermarket chains (BigBasket, Reliance Fresh, ITC Foods, processors).
+   - Forward Request for Quote (RFQ) generator with 100% smart escrow backing.
+
+4. **📢 AI Live Rate Announcement (`RateAnnouncementBar.jsx`)**:
+   - Live price ticker broadcasting real-time Setu vs Mandi commodity rates.
+   - Built-in multilingual voice synthesizer (English, Hindi, Odia) powered by Web Speech API.
+
+5. **🛒 Smart Escrow Cart Drawer (`CartDrawer.jsx`)**:
+   - Slide-over cart with quantity stepper, transparent logistics fee (7%), escrow security (2%), and one-click checkout.
+
+6. **🔬 AI Farmgate Quality Assaying (`ScannerTab.jsx`)**:
+   - Simulated MobileNet-AgriV4 edge CNN camera feed with laser scanning animation.
+   - Real-time Brix sugar content, ethylene ripeness, and surface defect detection.
+   - Verifiable cryptographic ISO Assaying Certificate generator (`CertificateModal.jsx`).
+
+7. **🚚 OR-Tools Cold Fleet Routing (`LogisticsTab.jsx`)**:
+   - Google OR-Tools Capacitated Vehicle Routing with Time Windows (CVRPTW) cold-chain fleet management.
+   - Temperature telemetry, solar battery tracking, and morning harvest window schedules.
+
+8. **📈 Forward Contracts & Demand Forecasting (`ForecastTab.jsx`)**:
+   - Pre-harvest institutional forward contracts with locked procurement prices.
+
+9. **📊 Macroeconomic Research (`MacroTab.jsx`)**:
+   - Empirical synthesis from RBI, NABARD, ICAR, and Odisha RMCs.
+
+---
+
+## 📂 Modular Architecture
 
 ```
 kisan-setu/
-├── index.html                  # Main web entry point with Tailwind CDN & Babel standalone
-├── server.py                   # Lightweight Python dev server with CORS & cache control
+├── index.html                   # Main entry point with Tailwind CDN & Babel standalone pipeline
+├── server.py                    # Lightweight Python HTTP development server
+├── push_to_github.bat           # 1-Click Windows batch script to sync and push changes to GitHub
+├── sync_git.ps1                 # Automated PowerShell Git sync script
+├── start_server.bat             # 1-Click local server launcher
 ├── css/
-│   └── style.css               # Typography, animations (laser scanner, voice waves), scrollbars
+│   └── style.css                # Custom fonts, animations (laser scan, voice wave), scrollbars
 └── src/
-    ├── App.jsx                 # Central state orchestrator (routing, modals, roles, escrow)
-    ├── main.jsx                # React DOM mount entry
+    ├── App.jsx                  # Main root state orchestrator (tabs, cart, escrow, modals, roles)
+    ├── main.jsx                 # React DOM mount entry
     │
-    ├── components/             # Modular UI Divisions
-    │   ├── Header.jsx          # Sovereign telemetry strip, persona selector & voice trigger
-    │   ├── Navbar.jsx          # Tab navigation across all 5 ecosystem divisions
-    │   ├── MarketplaceTab.jsx  # Division 1: RBI Value Wedge comparison & live lot procurement
-    │   ├── ScannerTab.jsx      # Division 2: Edge MobileNet-AgriV4 CNN spectral assaying & camera feed
-    │   ├── LogisticsTab.jsx    # Division 3: Google OR-Tools CVRPTW fleet routing & cold corridor map
-    │   ├── ForecastTab.jsx     # Division 4: Pre-harvest forward contracts & institutional escrow
-    │   ├── MacroTab.jsx        # Division 5: Empirical macro research & supply chain comparison
-    │   ├── VoiceModal.jsx      # Kisan Vani AI multilingual Indic speech synthesizer (Web Speech API)
-    │   ├── CertificateModal.jsx# Cryptographic ISO farmgate assaying certificate with QR seal
-    │   └── Footer.jsx          # System telemetry & platform credits
+    ├── components/              # Modular UI Component Divisions
+    │   ├── Header.jsx           # Top telemetry bar, persona selector & voice button
+    │   ├── Navbar.jsx           # Tab navigation across all 8 ecosystem divisions
+    │   ├── RateAnnouncementBar.jsx # AI live rate broadcast ticker with audio player
+    │   ├── FarmerPortalTab.jsx  # Farmer Portal: Add produce lots & valuation calculator
+    │   ├── BuyerStoreTab.jsx    # Buyer Storefront: E-commerce marketplace & filters
+    │   ├── BulkBuyerTab.jsx     # Bulk B2B Desk: Multi-ton contracts & RFQ generator
+    │   ├── CartDrawer.jsx       # Slide-over shopping cart & smart escrow checkout
+    │   ├── MarketplaceTab.jsx   # RBI 16-commodity value wedge margin analysis
+    │   ├── ScannerTab.jsx       # Edge MobileNet CNN spectral assaying & camera simulator
+    │   ├── LogisticsTab.jsx     # Google OR-Tools CVRPTW cold fleet routing & corridor map
+    │   ├── ForecastTab.jsx      # Pre-harvest institutional forward contracts
+    │   ├── MacroTab.jsx         # Macroeconomic research & supply chain comparison
+    │   ├── VoiceModal.jsx       # Kisan Vani AI multilingual voice assistant
+    │   ├── CertificateModal.jsx # Cryptographic ISO quality assaying certificate
+    │   └── Footer.jsx           # Telemetry status & platform footer
     │
-    └── data/                   # Dedicated Data Modules
-        ├── commodities.js      # RBI 16-commodity value wedge & margin breakdown
-        ├── cvPresets.js        # Crop assaying presets, Brix sugar, defect % & spectral analysis
-        ├── farmgateLots.js     # Live farmgate produce lots ready for instant escrow execution
-        ├── fleet.js            # Reefer cold van telemetry, solar battery & CVRPTW waypoints
-        ├── forwardContracts.js # Institutional contracts (ITC, BigBasket, Reliance, Tata)
-        ├── macroStats.js       # Macro stats from RBI, NABARD, ICAR & supply chain matrix
-        └── voiceSamples.js     # Indic voice dialogue samples (Odia, Hindi, Bengali, English)
+    └── data/                    # Dedicated Data Modules
+        ├── commodities.js       # RBI 16-commodity dataset & value wedge breakdown
+        ├── cvPresets.js         # Spectral assaying presets, Brix sugar, defect % & grades
+        ├── farmgateLots.js      # Live produce lots for e-commerce inventory
+        ├── fleet.js             # Cold reefer van telemetry, solar battery & waypoints
+        ├── forwardContracts.js  # Institutional contracts (BigBasket, ITC, Reliance, Tata)
+        ├── macroStats.js        # NABARD/RBI macro indicators & supply chain comparison
+        ├── rateAnnouncements.js # AI rate broadcast scripts & spoken audio texts
+        └── voiceSamples.js      # Multilingual Indic dialogue samples (English, Hindi, Odia)
 ```
 
 ---
 
-## 🚀 Running the Application
+## 🚀 Running Locally
 
-### Option 1: Using the Python Server (Active)
-The server is currently running at:
-👉 **[http://localhost:5173](http://localhost:5173)**
-
-To start or restart manually:
-```bash
-cd C:\Users\This_PC\.gemini\antigravity\scratch\kisan-setu
+### Option 1: Start Server via Python
+```powershell
 python server.py
 ```
+Open **[http://localhost:5173](http://localhost:5173)** in your web browser.
 
-### Option 2: Direct Browser Launch
-Open `index.html` in any modern web browser.
+### Option 2: 1-Click Launch (Windows)
+Double-click **`start_server.bat`** in the project folder.
+
+---
+
+## 🔄 Syncing Changes to GitHub
+Double-click **`push_to_github.bat`** or run:
+```powershell
+powershell -ExecutionPolicy Bypass -File sync_git.ps1
+```
