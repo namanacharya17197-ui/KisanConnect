@@ -19,6 +19,11 @@ function App() {
     try {
       localStorage.setItem('kisansetu_theme', theme);
     } catch (e) {}
+
+    // Register PWA Service Worker for offline capability
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -399,7 +404,7 @@ function App() {
         )}
 
         {/* Active Section Content View */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto space-y-6">
           
           {/* ================= FARMER ROLE SECTIONS ================= */}
           {userRole === 'farmer' && (
@@ -412,6 +417,14 @@ function App() {
                   onOpenScanner={() => setTab('scanner')}
                   orders={orders}
                 />
+              )}
+
+              {tab === 'trust' && window.TrustVerificationHub && (
+                <window.TrustVerificationHub currentUser={currentUser} />
+              )}
+
+              {tab === 'finance' && window.FinancialRailsTab && (
+                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
               )}
 
               {tab === 'scanner' && window.ScannerTab && (
@@ -468,6 +481,14 @@ function App() {
                 />
               )}
 
+              {tab === 'trust' && window.TrustVerificationHub && (
+                <window.TrustVerificationHub currentUser={currentUser} />
+              )}
+
+              {tab === 'finance' && window.FinancialRailsTab && (
+                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
+              )}
+
               {tab === 'market' && window.MarketplaceTab && (
                 <window.MarketplaceTab 
                   selectedCrop={selectedCrop}
@@ -491,6 +512,14 @@ function App() {
 
               {tab === 'forecast' && window.ForecastTab && (
                 <window.ForecastTab />
+              )}
+
+              {tab === 'trust' && window.TrustVerificationHub && (
+                <window.TrustVerificationHub currentUser={currentUser} />
+              )}
+
+              {tab === 'finance' && window.FinancialRailsTab && (
+                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
               )}
 
               {tab === 'logistics' && window.LogisticsTab && (

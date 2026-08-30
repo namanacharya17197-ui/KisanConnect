@@ -1,0 +1,21 @@
+{
+  "name": "Kisan Setu Sovereign Agritech",
+  "short_name": "KisanSetu",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#064e3b",
+  "description": "Sovereign AI-Disintermediated Agritech, Direct Farmgate Escrow & E-Commerce Ecosystem",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=192&h=192&q=80",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=512&h=512&q=80",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

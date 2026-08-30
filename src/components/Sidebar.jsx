@@ -12,15 +12,16 @@ function Sidebar({
   isOpenMobile,
   onCloseMobile
 }) {
-  // Strict Role-Based Vertical Navigation Items
   let navSections = [];
 
   if (userRole === 'farmer') {
     navSections = [
       {
-        sectionTitle: 'PRODUCER HUB',
+        sectionTitle: 'PRODUCER OPERATIONS',
         items: [
-          { id: 'farmer', label: 'Farmer Dashboard', icon: '🌾', badge: 'Active', desc: 'Listings & Buyer Feed' },
+          { id: 'farmer', label: 'Farmer Dashboard', icon: '🌾', badge: 'Active', desc: 'Listings & Live Buyers' },
+          { id: 'trust', label: 'KYC & Satellite Mesh', icon: '🛡️', badge: 'Verified', desc: 'Aadhaar & Bhuvan Map' },
+          { id: 'finance', label: 'UPI & KCC Loan Desk', icon: '💳', badge: '4% KCC', desc: 'Advances & PMFBY' },
           { id: 'scanner', label: 'AI Assaying (CNN)', icon: '🔬', badge: 'Edge AI', desc: 'Spectral Quality Scan' },
           { id: 'logistics', label: 'Cold Fleet Pickups', icon: '🚚', badge: 'OR-Tools', desc: 'Reefer Dispatch' },
           { id: 'market', label: 'Mandi Price Index', icon: '🏪', badge: 'RBI Data', desc: 'Value Wedge & Margins' }
@@ -34,6 +35,8 @@ function Sidebar({
         items: [
           { id: 'buyer', label: 'Produce Storefront', icon: '🛒', badge: 'Store', desc: 'Browse Fresh Lots' },
           { id: 'buyer-orders', label: 'My Orders & Escrow', icon: '📦', badge: 'Active', desc: 'Cold Transit Tracking' },
+          { id: 'trust', label: 'Trust & Dispute Hub', icon: '🛡️', badge: 'Arbitration', desc: 'Claims & Verification' },
+          { id: 'finance', label: 'UPI Payment Rails', icon: '💳', badge: 'Instant', desc: 'QR & Intent Checkout' },
           { id: 'market', label: 'Mandi Savings Index', icon: '🏪', badge: 'Savings', desc: 'Consumer Price Benefit' }
         ]
       }
@@ -45,6 +48,8 @@ function Sidebar({
         items: [
           { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'Wholesale', desc: 'Multi-Ton RFQ Contracts' },
           { id: 'forecast', label: 'Forward Contracts', icon: '📈', badge: 'Escrow', desc: 'Pre-Harvest Locks' },
+          { id: 'trust', label: 'Ground-Truthing Hub', icon: '🛡️', badge: 'Sentinel-2', desc: 'Satellite NDVI Telemetry' },
+          { id: 'finance', label: 'Corporate Escrow Rails', icon: '💳', badge: 'Financing', desc: 'Advances & Settlement' },
           { id: 'logistics', label: 'Cold Corridors', icon: '🚚', badge: 'Fleet', desc: 'OR-Tools Routing' },
           { id: 'macro', label: 'Macro Research', icon: '📊', badge: 'Empirical', desc: 'RBI & NABARD Data' }
         ]
@@ -57,8 +62,9 @@ function Sidebar({
         items: [
           { id: 'farmer', label: 'Farmer Portal', icon: '🌾', badge: 'Seller', desc: 'List Produce' },
           { id: 'buyer', label: 'Buyer Store', icon: '🛒', badge: 'Store', desc: 'Shop Farmgate' },
-          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'B2B', desc: 'Multi-Ton Contracts' },
-          { id: 'market', label: 'Mandi Analysis', icon: '🏪', badge: 'RBI', desc: 'Value Wedge' }
+          { id: 'trust', label: 'Trust Protocol', icon: '🛡️', badge: 'KYC', desc: 'Aadhaar & Satellite' },
+          { id: 'finance', label: 'Financial Rails', icon: '💳', badge: 'UPI/KCC', desc: 'Payments & Loans' },
+          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'B2B', desc: 'Multi-Ton Contracts' }
         ]
       }
     ];
@@ -66,7 +72,7 @@ function Sidebar({
 
   return (
     <>
-      {/* Mobile Backdrop Overlay */}
+      {/* Mobile Backdrop */}
       {isOpenMobile && (
         <div 
           className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-xs lg:hidden"
@@ -80,7 +86,7 @@ function Sidebar({
           isOpenMobile ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Top: Brand Header */}
+        {/* Top: Brand & User Profile */}
         <div>
           <div className="p-4 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
             <div className="flex items-center gap-3 select-none">
@@ -93,16 +99,15 @@ function Sidebar({
                     Kisan Setu
                   </h1>
                   <span className="text-[10px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 rounded font-bold">
-                    v2.4
+                    v2.5
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none mt-0.5">
-                  Sovereign AI Agritech
+                  Sovereign Agritech Rails
                 </p>
               </div>
             </div>
 
-            {/* Mobile Close Button */}
             <button
               onClick={onCloseMobile}
               className="lg:hidden w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center text-xs cursor-pointer"
@@ -198,7 +203,7 @@ function Sidebar({
           </div>
         </div>
 
-        {/* Bottom Actions: Voice, Cart, Theme Toggle */}
+        {/* Bottom Actions: Voice, Cart, Theme Toggle, DPDP Compliance */}
         <div className="p-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2 bg-slate-50/50 dark:bg-[#111928]">
           {/* Quick Voice Assistant Button */}
           <button
