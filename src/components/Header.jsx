@@ -2,14 +2,15 @@ function Header({
   currentUser, 
   onLogout, 
   userRole, 
-  setUserRole, 
   onOpenVoice, 
   onTabChange, 
   cartItemCount, 
-  onOpenCart 
+  onOpenCart,
+  theme,
+  onToggleTheme
 }) {
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 dark:border-slate-800 shadow-xs transition-colors duration-200">
       {/* Top Telemetry Sovereign Strip */}
       <div className="bg-emerald-950 text-white text-xs px-4 py-1.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -22,10 +23,20 @@ function Header({
           </span>
         </div>
 
-        {/* User Profile & Role Switcher */}
+        {/* User Profile, Theme Switcher & Logout */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {currentUser ? (
-            <div className="flex items-center gap-2">
+          {/* Light / Dark Mode Toggle Switch */}
+          <button
+            onClick={onToggleTheme}
+            className="px-2.5 py-1 rounded-lg bg-emerald-900/90 hover:bg-emerald-800 text-amber-300 hover:text-amber-200 border border-emerald-700/80 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-inner"
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            <span>{theme === 'dark' ? '☀️' : '🌙'}</span>
+            <span className="hidden sm:inline">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+
+          {currentUser && (
+            <div className="flex items-center gap-2 border-l border-emerald-800/80 pl-2">
               <span className="text-sm">{currentUser.avatar || '👤'}</span>
               <div className="text-left hidden sm:block">
                 <span className="font-bold text-white text-xs block leading-tight">{currentUser.name}</span>
@@ -33,31 +44,11 @@ function Header({
               </div>
               <button
                 onClick={onLogout}
-                className="px-2 py-0.5 rounded bg-emerald-900 hover:bg-emerald-800 text-slate-300 hover:text-white border border-emerald-700 text-[11px] font-semibold transition cursor-pointer"
+                className="px-2 py-0.5 rounded bg-emerald-900 hover:bg-rose-900/80 text-slate-300 hover:text-white border border-emerald-700 hover:border-rose-600 text-[11px] font-semibold transition cursor-pointer"
                 title="Switch persona or logout"
               >
-                Switch Account
+                Sign Out
               </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-slate-300 text-xs font-medium">Active Persona:</span>
-              <select 
-                value={userRole} 
-                onChange={(e) => {
-                  const role = e.target.value;
-                  setUserRole(role);
-                  if (role === 'farmer') onTabChange('farmer');
-                  else if (role === 'buyer') onTabChange('buyer');
-                  else if (role === 'bulk') onTabChange('bulk');
-                }}
-                className="bg-emerald-900 text-white rounded-lg px-2.5 py-1 text-xs border border-emerald-700 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer"
-              >
-                <option value="farmer">🌾 Farmer (Produce Seller)</option>
-                <option value="buyer">🛒 Retail Buyer (Store Marketplace)</option>
-                <option value="bulk">🏢 Bulk Institutional Buyer (B2B Desk)</option>
-                <option value="logistics">🚚 Reefer Fleet (Cold Logistics)</option>
-              </select>
             </div>
           )}
         </div>
@@ -78,7 +69,7 @@ function Header({
                 Kisan Setu
               </h1>
               <span className="text-[11px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold border border-emerald-200">
-                v2.4 Sovereign
+                {userRole === 'farmer' ? '👨‍🌾 Farmer Dashboard' : userRole === 'bulk' ? '🏢 Bulk B2B Desk' : '🛒 Buyer Store'}
               </span>
             </div>
             <p className="text-xs text-slate-500 hidden sm:block">
@@ -88,19 +79,21 @@ function Header({
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Cart Button */}
-          <button
-            onClick={onOpenCart}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 font-bold text-xs border border-slate-200 transition cursor-pointer relative"
-          >
-            <span>🛒</span>
-            <span className="hidden sm:inline">Cart</span>
-            {cartItemCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold">
-                {cartItemCount}
-              </span>
-            )}
-          </button>
+          {/* Cart Button (Only for Buyers) */}
+          {(userRole === 'buyer' || userRole === 'bulk') && (
+            <button
+              onClick={onOpenCart}
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-800 hover:text-emerald-900 font-bold text-xs border border-slate-200 transition cursor-pointer relative"
+            >
+              <span>🛒</span>
+              <span className="hidden sm:inline">Cart</span>
+              {cartItemCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Voice Assistant CTA */}
           <button
@@ -111,7 +104,7 @@ function Header({
             <span className="text-base">🎙️</span>
             <span className="font-bold">Kisan Vani AI</span>
             <span className="hidden sm:inline bg-amber-800/40 px-1.5 py-0.5 rounded text-[10px] text-amber-100">
-              Voice Assistant
+              Voice Engine
             </span>
           </button>
         </div>

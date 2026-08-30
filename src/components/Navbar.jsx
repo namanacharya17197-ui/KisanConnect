@@ -1,17 +1,39 @@
-function Navbar({ activeTab, onTabChange }) {
-  const tabs = [
-    { id: 'farmer', label: '🌾 Farmer Portal (Sell Produce)', sublabel: 'Add & Manage Lots', badge: 'Farmer Portal' },
-    { id: 'buyer', label: '🛒 Buyer Store (Buy Produce)', sublabel: 'E-Commerce Storefront', badge: 'Buyer Store' },
-    { id: 'bulk', label: '🏢 Bulk B2B Desk (Institutional)', sublabel: 'Multi-Ton Contracts', badge: 'B2B Wholesale' },
-    { id: 'market', label: '🏪 Mandi Analysis (Value Wedge)', sublabel: 'RBI Benchmark Comparison', badge: 'RBI Benchmark' },
-    { id: 'scanner', label: '🔬 AI Quality Assaying (CNN)', sublabel: 'MobileNet Spectral Scan', badge: 'Edge CV' },
-    { id: 'logistics', label: '🚚 Cold Fleet (OR-Tools)', sublabel: 'CVRPTW Route Engine', badge: 'Cold Chain' },
-    { id: 'forecast', label: '📈 Forward Contracts', sublabel: 'Pre-Harvest Escrow Locks', badge: 'Escrow Locks' },
-    { id: 'macro', label: '📊 Macro Research Data', sublabel: 'RBI / NABARD Synthesis', badge: 'Empirical' }
-  ];
+function Navbar({ activeTab, onTabChange, userRole }) {
+  // Strict Role-Based Tab Filtering
+  let tabs = [];
+
+  if (userRole === 'farmer') {
+    tabs = [
+      { id: 'farmer', label: '🌾 Farmer Portal', sublabel: 'List Produce & Incoming Buyers', badge: 'Seller Portal' },
+      { id: 'scanner', label: '🔬 AI Quality Assaying (CNN)', sublabel: 'MobileNet Spectral Scan', badge: 'Edge CV' },
+      { id: 'logistics', label: '🚚 Cold Fleet Pickups (OR-Tools)', sublabel: 'CVRPTW Farmgate Dispatch', badge: 'Logistics' },
+      { id: 'market', label: '🏪 Mandi Price Comparison', sublabel: 'RBI Benchmark Margins', badge: 'Price Index' }
+    ];
+  } else if (userRole === 'buyer') {
+    tabs = [
+      { id: 'buyer', label: '🛒 Buyer Storefront', sublabel: 'Browse & Buy Farmgate Produce', badge: 'E-Commerce Store' },
+      { id: 'buyer-orders', label: '📦 My Orders & Tracking', sublabel: 'Cold-Chain Delivery Status', badge: 'Active Escrow' },
+      { id: 'market', label: '🏪 Mandi Savings Index', sublabel: 'Consumer Direct Benefit', badge: 'Price Index' }
+    ];
+  } else if (userRole === 'bulk') {
+    tabs = [
+      { id: 'bulk', label: '🏢 Bulk B2B Procurement Desk', sublabel: 'Multi-Ton RFQ Contracts', badge: 'B2B Wholesale' },
+      { id: 'forecast', label: '📈 Forward Contracts & Escrow', sublabel: 'Pre-Harvest Institutional Locks', badge: 'Escrow Locks' },
+      { id: 'logistics', label: '🚚 Cold Fleet Logistics (OR-Tools)', sublabel: 'CVRPTW Cold Corridors', badge: 'Logistics' },
+      { id: 'macro', label: '📊 Macroeconomic Research', sublabel: 'RBI / NABARD Empirical Data', badge: 'Macro Data' }
+    ];
+  } else {
+    // Default fallback
+    tabs = [
+      { id: 'buyer', label: '🛒 Buyer Store', sublabel: 'Shop Produce', badge: 'Store' },
+      { id: 'farmer', label: '🌾 Farmer Portal', sublabel: 'List Harvest', badge: 'Seller' },
+      { id: 'bulk', label: '🏢 Bulk B2B Desk', sublabel: 'Multi-Ton RFQ', badge: 'B2B' },
+      { id: 'market', label: '🏪 Mandi Analysis', sublabel: 'Value Wedge', badge: 'RBI' }
+    ];
+  }
 
   return (
-    <nav className="bg-white border-b border-slate-200">
+    <nav className="bg-white border-b border-slate-200 shadow-xs transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 flex gap-1.5 sm:gap-2 overflow-x-auto py-2.5 no-scrollbar">
         {tabs.map((item) => {
           const isActive = activeTab === item.id;

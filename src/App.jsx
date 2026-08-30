@@ -5,6 +5,26 @@ function App() {
   const commodities = window.COMMODITIES || [];
   const cvPresets = window.CV_PRESETS || [];
 
+  // Theme Management (Light / Dark)
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('kisansetu_theme') || 'light';
+    } catch (e) {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    document.body.className = `theme-${theme} antialiased selection:bg-emerald-200 selection:text-emerald-900`;
+    try {
+      localStorage.setItem('kisansetu_theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   // Authentication State
   const [currentUser, setCurrentUser] = useState(() => {
     try {
@@ -19,6 +39,67 @@ function App() {
   const [lots, setLots] = useState(initialLots);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Live Orders Stream (Who is Buying the Produce)
+  const [orders, setOrders] = useState([
+    {
+      orderId: 'ORD-9104',
+      buyerName: 'BigBasket Metro Fulfillment Hub',
+      buyerType: 'Supermarket Chain (Retail B2B)',
+      buyerLocation: 'Bhubaneswar Hub-2',
+      buyerAvatar: '🏬',
+      crop: 'Alphonso Mango (Amrapali)',
+      lotId: 'LOT-4410',
+      farmerName: 'Ramesh Patra',
+      location: 'Sakhigopal, Puri',
+      qty: 500,
+      pricePerKg: 88,
+      farmerPayout: 44000,
+      totalAmount: 47960,
+      status: 'Escrow Deposited (100%)',
+      reeferId: 'Tata 709 Reefer (OD-02-K-9901)',
+      tempCelsius: '4.8°C (Optimal)',
+      timestamp: 'Today, 08:30 AM'
+    },
+    {
+      orderId: 'ORD-8922',
+      buyerName: 'Ananya Sharma',
+      buyerType: 'Verified Retail Customer',
+      buyerLocation: 'Bhubaneswar Consumer Desk',
+      buyerAvatar: '🛒',
+      crop: 'Robusta Bananas (Grand Naine)',
+      lotId: 'LOT-9921',
+      farmerName: 'Ramesh Patra',
+      location: 'Sakhigopal, Puri',
+      qty: 60,
+      pricePerKg: 33,
+      farmerPayout: 1980,
+      totalAmount: 2158,
+      status: 'In Reefer Transit',
+      reeferId: 'Mahindra Bolero Reefer (OD-02-B-1142)',
+      tempCelsius: '12.5°C (Controlled)',
+      timestamp: 'Today, 09:15 AM'
+    },
+    {
+      orderId: 'ORD-8710',
+      buyerName: 'ITC Agri & Foods Processing Plant',
+      buyerType: 'Institutional Processor',
+      buyerLocation: 'Cuttack Food Park',
+      buyerAvatar: '🏢',
+      crop: 'Hybrid Red Tomatoes',
+      lotId: 'LOT-1192',
+      farmerName: 'Ramesh Patra',
+      location: 'Sakhigopal, Puri',
+      qty: 1200,
+      pricePerKg: 24,
+      farmerPayout: 28800,
+      totalAmount: 31392,
+      status: 'Escrow Locked (100%)',
+      reeferId: 'Eicher Pro Reefer (OD-33-F-7788)',
+      tempCelsius: '6.2°C (Freshness Assured)',
+      timestamp: 'Yesterday, 04:00 PM'
+    }
+  ]);
 
   const [selectedCrop, setSelectedCrop] = useState(commodities[0] || null);
   const [selectedPreset, setSelectedPreset] = useState(cvPresets[0] || null);
@@ -39,6 +120,12 @@ function App() {
     if (!selectedPreset && window.CV_PRESETS && window.CV_PRESETS.length > 0) {
       setSelectedPreset(window.CV_PRESETS[0]);
     }
+    if (currentUser) {
+      setUserRole(currentUser.role);
+      if (currentUser.role === 'farmer') setTab('farmer');
+      else if (currentUser.role === 'buyer') setTab('buyer');
+      else if (currentUser.role === 'bulk') setTab('bulk');
+    }
   }, []);
 
   // Handle Login
@@ -49,7 +136,7 @@ function App() {
       localStorage.setItem('kisansetu_user', JSON.stringify(user));
     } catch (e) {}
 
-    // Route directly to relevant division
+    // Strict role default routing
     if (user.role === 'farmer') {
       setTab('farmer');
     } else if (user.role === 'buyer') {
@@ -105,7 +192,7 @@ function App() {
       `• Total Volume: ${newLot.qty} kg\n` +
       `• Direct Price: ₹${newLot.pricePerKg}/kg\n` +
       `• Total Lot Value: ₹${(newLot.qty * newLot.pricePerKg).toLocaleString('en-IN')}\n\n` +
-      `Retail buyers and institutional bulk purchasers can now procure directly from your farmgate!`
+      `Incoming orders will appear in your "Who Is Buying Your Produce" feed!`
     );
   };
 
@@ -142,6 +229,30 @@ function App() {
     if (window.confetti) {
       window.confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
     }
+
+    // Add items from cart to live orders stream
+    const newOrders = cart.map((item, i) => ({
+      orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+      buyerName: currentUser ? currentUser.name : 'Verified Retail Buyer',
+      buyerType: currentUser ? currentUser.badge : 'Customer',
+      buyerLocation: currentUser ? currentUser.location : 'Metro Hub',
+      buyerAvatar: currentUser ? currentUser.avatar : '🛒',
+      crop: item.crop,
+      lotId: item.lot,
+      farmerName: item.farmer,
+      location: item.location,
+      qty: item.qty,
+      pricePerKg: item.pricePerKg,
+      farmerPayout: item.qty * item.pricePerKg,
+      totalAmount: Math.round(item.qty * item.pricePerKg * 1.09),
+      status: 'Escrow Locked (100%)',
+      reeferId: 'Tata 709 Reefer (OD-01)',
+      tempCelsius: '4.8°C (Optimal)',
+      timestamp: 'Just now'
+    }));
+
+    setOrders((prev) => [...newOrders, ...prev]);
+
     alert(
       `🎉 Smart Escrow Checkout Completed!\n\n` +
       `• Escrow Amount Deposited: ₹${totalAmount.toLocaleString('en-IN')}\n` +
@@ -158,6 +269,29 @@ function App() {
     if (window.confetti) {
       window.confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
     }
+
+    const newOrder = {
+      orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+      buyerName: currentUser ? currentUser.name : 'Verified Retail Buyer',
+      buyerType: currentUser ? currentUser.badge : 'Customer',
+      buyerLocation: currentUser ? currentUser.location : 'Metro Hub',
+      buyerAvatar: currentUser ? currentUser.avatar : '🛒',
+      crop: lot.crop,
+      lotId: lot.lot,
+      farmerName: lot.farmer,
+      location: lot.location,
+      qty: qty,
+      pricePerKg: lot.pricePerKg,
+      farmerPayout: qty * lot.pricePerKg,
+      totalAmount: total,
+      status: 'Escrow Locked (100%)',
+      reeferId: 'Tata 709 Reefer (OD-01)',
+      tempCelsius: '4.8°C (Optimal)',
+      timestamp: 'Just now'
+    };
+
+    setOrders((prev) => [newOrder, ...prev]);
+
     alert(
       `🎉 Smart Escrow Procurement Executed!\n\n` +
       `• Lot: ${lot.lot} (${lot.crop})\n` +
@@ -218,20 +352,20 @@ function App() {
     );
   }
 
-  // LOGGED IN DASHBOARD
   return (
-    <div className="min-h-screen flex flex-col bg-[#f7f9f6] text-[#1e293b]">
+    <div className="min-h-screen flex flex-col transition-colors duration-200">
       {/* Top Header Division */}
       {window.Header && (
         <window.Header 
           currentUser={currentUser}
           onLogout={handleLogout}
           userRole={userRole} 
-          setUserRole={setUserRole} 
           onOpenVoice={() => setShowVoiceModal(true)}
           onTabChange={setTab}
           cartItemCount={cart.length}
           onOpenCart={() => setIsCartOpen(true)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
         />
       )}
 
@@ -242,85 +376,124 @@ function App() {
         />
       )}
 
-      {/* Navigation Tabs Division */}
+      {/* Navigation Tabs Division (Strict Role Isolation) */}
       {window.Navbar && (
         <window.Navbar 
           activeTab={tab} 
           onTabChange={setTab} 
+          userRole={userRole}
         />
       )}
 
-      {/* Active Division View */}
+      {/* Active Division View (Strict Role Permission Enforcement) */}
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 sm:py-8 w-full">
-        {/* Section 1: Farmer Portal (Sell Produce) */}
-        {tab === 'farmer' && window.FarmerPortalTab && (
-          <window.FarmerPortalTab 
-            lots={lots}
-            onAddLot={handleAddLot}
-            onOpenCertificate={() => setShowCertModal(true)}
-            onOpenScanner={() => setTab('scanner')}
-          />
+        
+        {/* ================= FARMER ROLE SECTIONS ================= */}
+        {userRole === 'farmer' && (
+          <>
+            {tab === 'farmer' && window.FarmerPortalTab && (
+              <window.FarmerPortalTab 
+                lots={lots}
+                onAddLot={handleAddLot}
+                onOpenCertificate={() => setShowCertModal(true)}
+                onOpenScanner={() => setTab('scanner')}
+                orders={orders}
+              />
+            )}
+
+            {tab === 'scanner' && window.ScannerTab && (
+              <window.ScannerTab 
+                selectedPreset={selectedPreset}
+                setSelectedPreset={setSelectedPreset}
+                isScanning={isScanning}
+                onTriggerScan={handleTriggerScan}
+                onOpenCertificate={() => setShowCertModal(true)}
+              />
+            )}
+
+            {tab === 'logistics' && window.LogisticsTab && (
+              <window.LogisticsTab />
+            )}
+
+            {tab === 'market' && window.MarketplaceTab && (
+              <window.MarketplaceTab 
+                selectedCrop={selectedCrop}
+                setSelectedCrop={setSelectedCrop}
+                onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                userRole={userRole}
+              />
+            )}
+          </>
         )}
 
-        {/* Section 2: Buyer E-Commerce Store (Buy Produce) */}
-        {tab === 'buyer' && window.BuyerStoreTab && (
-          <window.BuyerStoreTab 
-            lots={lots}
-            onAddToCart={handleAddToCart}
-            onInstantBuy={handleInstantBuy}
-            onOpenCertificate={() => setShowCertModal(true)}
-            cartItemCount={cart.length}
-            onOpenCart={() => setIsCartOpen(true)}
-          />
+        {/* ================= RETAIL BUYER ROLE SECTIONS ================= */}
+        {userRole === 'buyer' && (
+          <>
+            {tab === 'buyer' && window.BuyerStoreTab && (
+              <window.BuyerStoreTab 
+                lots={lots}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onOpenCertificate={() => setShowCertModal(true)}
+                cartItemCount={cart.length}
+                onOpenCart={() => setIsCartOpen(true)}
+                orders={orders}
+                showOrdersOnly={false}
+              />
+            )}
+
+            {tab === 'buyer-orders' && window.BuyerStoreTab && (
+              <window.BuyerStoreTab 
+                lots={lots}
+                onAddToCart={handleAddToCart}
+                onInstantBuy={handleInstantBuy}
+                onOpenCertificate={() => setShowCertModal(true)}
+                cartItemCount={cart.length}
+                onOpenCart={() => setIsCartOpen(true)}
+                orders={orders}
+                showOrdersOnly={true}
+              />
+            )}
+
+            {tab === 'market' && window.MarketplaceTab && (
+              <window.MarketplaceTab 
+                selectedCrop={selectedCrop}
+                setSelectedCrop={setSelectedCrop}
+                onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                userRole={userRole}
+              />
+            )}
+          </>
         )}
 
-        {/* Section 3: Bulk Institutional Buyer B2B Desk */}
-        {tab === 'bulk' && window.BulkBuyerTab && (
-          <window.BulkBuyerTab 
-            lots={lots}
-            onExecuteBulkContract={(c) => alert(`Bulk contract locked for ${c.crop}!`)}
-          />
+        {/* ================= BULK B2B DESK ROLE SECTIONS ================= */}
+        {userRole === 'bulk' && (
+          <>
+            {tab === 'bulk' && window.BulkBuyerTab && (
+              <window.BulkBuyerTab 
+                lots={lots}
+                onExecuteBulkContract={(c) => alert(`Bulk contract locked for ${c.crop}!`)}
+              />
+            )}
+
+            {tab === 'forecast' && window.ForecastTab && (
+              <window.ForecastTab />
+            )}
+
+            {tab === 'logistics' && window.LogisticsTab && (
+              <window.LogisticsTab />
+            )}
+
+            {tab === 'macro' && window.MacroTab && (
+              <window.MacroTab />
+            )}
+          </>
         )}
 
-        {/* Section 4: Fair Marketplace & RBI Value Wedge */}
-        {tab === 'market' && window.MarketplaceTab && (
-          <window.MarketplaceTab 
-            selectedCrop={selectedCrop}
-            setSelectedCrop={setSelectedCrop}
-            onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
-            userRole={userRole}
-          />
-        )}
-
-        {/* Section 5: AI Quality Assaying */}
-        {tab === 'scanner' && window.ScannerTab && (
-          <window.ScannerTab 
-            selectedPreset={selectedPreset}
-            setSelectedPreset={setSelectedPreset}
-            isScanning={isScanning}
-            onTriggerScan={handleTriggerScan}
-            onOpenCertificate={() => setShowCertModal(true)}
-          />
-        )}
-
-        {/* Section 6: Cold Fleet Routing */}
-        {tab === 'logistics' && window.LogisticsTab && (
-          <window.LogisticsTab />
-        )}
-
-        {/* Section 7: Forward Contracts */}
-        {tab === 'forecast' && window.ForecastTab && (
-          <window.ForecastTab />
-        )}
-
-        {/* Section 8: Macro Research */}
-        {tab === 'macro' && window.MacroTab && (
-          <window.MacroTab />
-        )}
       </main>
 
-      {/* Slide-over Cart Drawer */}
-      {window.CartDrawer && (
+      {/* Slide-over Cart Drawer (Only for Buyers) */}
+      {(userRole === 'buyer' || userRole === 'bulk') && window.CartDrawer && (
         <window.CartDrawer 
           isOpen={isCartOpen}
           onClose={() => setIsCartOpen(false)}

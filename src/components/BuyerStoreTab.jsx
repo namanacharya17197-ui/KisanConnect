@@ -4,7 +4,9 @@ function BuyerStoreTab({
   onInstantBuy, 
   onOpenCertificate, 
   cartItemCount, 
-  onOpenCart 
+  onOpenCart,
+  orders = [],
+  showOrdersOnly = false
 }) {
   const { useState, useMemo } = React;
 
@@ -29,7 +31,7 @@ function BuyerStoreTab({
       if (sortBy === 'price-low') return a.pricePerKg - b.pricePerKg;
       if (sortBy === 'price-high') return b.pricePerKg - a.pricePerKg;
       if (sortBy === 'qty') return b.availableQty - a.availableQty;
-      return 0; // featured
+      return 0;
     });
   }, [lots, searchQuery, selectedCategory, sortBy]);
 
@@ -37,6 +39,68 @@ function BuyerStoreTab({
     setSelectedLotForModal(lot);
     setModalQty(lot.minOrderKg || 50);
   };
+
+  // If viewing orders
+  if (showOrdersOnly) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-emerald-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold">
+              📦 My Orders & Cold-Chain Escrow Tracking
+            </span>
+            <h2 className="text-2xl font-extrabold">Active Buyer Procurement Orders</h2>
+            <p className="text-xs sm:text-sm text-teal-100/80">Track farmgate dispatch, Reefer cold-chain telemetry, and automated delivery verification.</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4">
+          <h3 className="font-extrabold text-base text-slate-900">Your Active Deliveries ({orders.length})</h3>
+          {orders.length === 0 ? (
+            <div className="text-center py-12 text-slate-400 space-y-2">
+              <div className="text-4xl">🛒</div>
+              <p className="font-bold text-slate-600">No active orders placed yet</p>
+              <p className="text-xs">Browse the storefront and order fresh farmgate produce under smart escrow.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {orders.map((ord, idx) => (
+                <div key={ord.orderId || idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="font-mono font-bold text-xs text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                        {ord.orderId || `ORD-${8800 + idx}`}
+                      </span>
+                      <h4 className="font-extrabold text-sm text-slate-900 mt-1">{ord.crop}</h4>
+                      <p className="text-xs text-slate-500">From: {ord.farmerName || 'Ramesh Patra'} ({ord.location || 'Sakhigopal'})</p>
+                    </div>
+                    <span className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px]">
+                      {ord.status || 'Escrow Locked (100%)'}
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Volume:</span>
+                      <strong>{ord.qty} kg</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Escrow Total:</span>
+                      <strong>₹{(ord.totalAmount || ord.qty * ord.pricePerKg * 1.09).toLocaleString('en-IN')}</strong>
+                    </div>
+                    <div className="flex justify-between text-teal-700">
+                      <span>Transit Reefer:</span>
+                      <span>Tata 709 Reefer (4.8°C)</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
