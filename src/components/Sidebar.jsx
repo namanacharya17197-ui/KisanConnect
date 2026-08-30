@@ -17,11 +17,20 @@ function Sidebar({
   if (userRole === 'farmer') {
     navSections = [
       {
-        sectionTitle: 'PRODUCER HUB',
+        sectionTitle: 'PRODUCER REVENUE',
         items: [
           { id: 'farmer', label: 'Farmer Dashboard', icon: '🌾', badge: 'Active', desc: 'Listings & Live Buyers' },
-          { id: 'scanner', label: 'AI Quality Assaying', icon: '🔬', badge: 'Edge AI', desc: 'MobileNet Spectral Scan' },
-          { id: 'logistics', label: 'Cold Fleet Pickups', icon: '🚚', badge: 'OR-Tools', desc: 'Reefer Dispatch' },
+          { id: 'reverse', label: 'Reverse Orders (HoReCa)', icon: '🔄', badge: 'Hot', desc: 'Hotels & Mess Demands' },
+          { id: 'advisor', label: 'Sell Now AI & Profit', icon: '🧠', badge: 'AI', desc: 'Net In-Hand Calculator' },
+          { id: 'waste', label: 'Waste to Money', icon: '♻️', badge: 'Extra ₹', desc: 'Sell B-Grade / Puree' }
+        ]
+      },
+      {
+        sectionTitle: 'FARM LOGISTICS & TOOLS',
+        items: [
+          { id: 'pooling', label: 'Shared Transport', icon: '🚚', badge: '-72%', desc: 'Group Nearby Trucks' },
+          { id: 'equipment', label: 'Equipment Sharing', icon: '🚜', badge: 'Rent', desc: 'Tractors & Harvesters' },
+          { id: 'scanner', label: 'AI Quality Assaying', icon: '🔬', badge: 'Edge CNN', desc: 'Brix & Defect Scan' },
           { id: 'market', label: 'Mandi Price Index', icon: '🏪', badge: 'RBI Data', desc: 'Value Wedge Margins' }
         ]
       }
@@ -29,10 +38,11 @@ function Sidebar({
   } else if (userRole === 'buyer') {
     navSections = [
       {
-        sectionTitle: 'BUYER HUB',
+        sectionTitle: 'BUYER STORE',
         items: [
           { id: 'buyer', label: 'Produce Storefront', icon: '🛒', badge: 'Store', desc: 'Browse Fresh Lots' },
-          { id: 'buyer-orders', label: 'My Orders & Tracking', icon: '📦', badge: 'Active', desc: 'Cold Transit Tracking' },
+          { id: 'buyer-orders', label: 'My Orders & Escrow', icon: '📦', badge: 'Active', desc: 'Cold Transit Tracking' },
+          { id: 'reverse', label: 'Post Requirement', icon: '🔄', badge: 'B2B/Mess', desc: 'HoReCa Direct Demand' },
           { id: 'market', label: 'Mandi Savings Index', icon: '🏪', badge: 'Savings', desc: 'Consumer Price Benefit' }
         ]
       }
@@ -43,8 +53,10 @@ function Sidebar({
         sectionTitle: 'B2B INSTITUTIONAL',
         items: [
           { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'Wholesale', desc: 'Multi-Ton RFQ Contracts' },
+          { id: 'reverse', label: 'Institutional Demands', icon: '🔄', badge: 'HoReCa', desc: 'Post Recurring Orders' },
           { id: 'forecast', label: 'Forward Contracts', icon: '📈', badge: 'Escrow', desc: 'Pre-Harvest Locks' },
-          { id: 'logistics', label: 'Cold Corridors', icon: '🚚', badge: 'Fleet', desc: 'OR-Tools Routing' },
+          { id: 'waste', label: 'Factory Raw Materials', icon: '♻️', badge: 'Biomass', desc: 'Puree, Feed & Flakes' },
+          { id: 'pooling', label: 'Cold Corridors', icon: '🚚', badge: 'Fleet', desc: 'OR-Tools Routing' },
           { id: 'macro', label: 'Macro Research', icon: '📊', badge: 'Empirical', desc: 'RBI & NABARD Data' }
         ]
       }
@@ -56,8 +68,9 @@ function Sidebar({
         items: [
           { id: 'farmer', label: 'Farmer Portal', icon: '🌾', badge: 'Seller', desc: 'List Produce' },
           { id: 'buyer', label: 'Buyer Store', icon: '🛒', badge: 'Store', desc: 'Shop Farmgate' },
-          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'B2B', desc: 'Multi-Ton Contracts' },
-          { id: 'market', label: 'Mandi Analysis', icon: '🏪', badge: 'RBI', desc: 'Value Wedge' }
+          { id: 'reverse', label: 'Reverse Marketplace', icon: '🔄', badge: 'Demands', desc: 'HoReCa Direct' },
+          { id: 'pooling', label: 'Shared Transport', icon: '🚚', badge: 'Logistics', desc: 'Freight Pooling' },
+          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'B2B', desc: 'Multi-Ton Contracts' }
         ]
       }
     ];
@@ -92,11 +105,11 @@ function Sidebar({
                     Kisan Setu
                   </h1>
                   <span className="text-[10px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 rounded font-bold">
-                    v2.4
+                    v2.5
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none mt-0.5">
-                  Sovereign Agritech Ecosystem
+                  Sovereign Agritech Rails
                 </p>
               </div>
             </div>
@@ -137,7 +150,7 @@ function Sidebar({
           )}
 
           {/* Navigation Menu List */}
-          <div className="px-3 py-2 space-y-4 overflow-y-auto max-h-[calc(100vh-280px)]">
+          <div className="px-3 py-2 space-y-4 overflow-y-auto max-h-[calc(100vh-270px)]">
             {navSections.map((sec, secIdx) => (
               <div key={secIdx} className="space-y-1">
                 <div className="px-3 text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
@@ -205,9 +218,9 @@ function Sidebar({
           >
             <div className="flex items-center gap-2">
               <span className="text-base">🎙️</span>
-              <span>Kisan Vani AI</span>
+              <span>Kisan Vani AI Voice</span>
             </div>
-            <span className="text-[10px] bg-amber-900/40 px-2 py-0.5 rounded-full">Voice Assistant</span>
+            <span className="text-[10px] bg-amber-900/40 px-2 py-0.5 rounded-full">Speech AI</span>
           </button>
 
           {/* Cart Trigger (For Buyers) */}

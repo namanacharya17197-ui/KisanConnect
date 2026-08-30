@@ -64,40 +64,40 @@ function App() {
     },
     {
       orderId: 'ORD-8922',
-      buyerName: 'Ananya Sharma',
-      buyerType: 'Verified Retail Customer',
-      buyerLocation: 'Bhubaneswar Consumer Desk',
-      buyerAvatar: '🛒',
-      crop: 'Robusta Bananas (Grand Naine)',
-      lotId: 'LOT-9921',
+      buyerName: 'Hotel Mayfair Lagoon',
+      buyerType: 'HoReCa Hotel Chain',
+      buyerLocation: 'Jaydev Vihar Kitchen',
+      buyerAvatar: '🏨',
+      crop: 'Hybrid Red Tomatoes',
+      lotId: 'REQ-1082',
       farmerName: 'Ramesh Patra',
       location: 'Sakhigopal, Puri',
-      qty: 60,
-      pricePerKg: 33,
-      farmerPayout: 1980,
-      totalAmount: 2158,
+      qty: 250,
+      pricePerKg: 28,
+      farmerPayout: 7000,
+      totalAmount: 7630,
       status: 'In Reefer Transit',
       reeferId: 'Mahindra Bolero Reefer (OD-02-B-1142)',
-      tempCelsius: '12.5°C (Controlled)',
+      tempCelsius: '5.2°C (Fresh)',
       timestamp: 'Today, 09:15 AM'
     },
     {
       orderId: 'ORD-8710',
-      buyerName: 'ITC Agri & Foods Processing Plant',
-      buyerType: 'Institutional Processor',
-      buyerLocation: 'Cuttack Food Park',
-      buyerAvatar: '🏢',
-      crop: 'Hybrid Red Tomatoes',
-      lotId: 'LOT-1192',
+      buyerName: 'KIIT University Hostel Mess',
+      buyerType: 'Hostel Mega Kitchen',
+      buyerLocation: 'Patia Campus',
+      buyerAvatar: '🎓',
+      crop: 'Fresh Potatoes & Onions',
+      lotId: 'REQ-1079',
       farmerName: 'Ramesh Patra',
       location: 'Sakhigopal, Puri',
-      qty: 1200,
+      qty: 800,
       pricePerKg: 24,
-      farmerPayout: 28800,
-      totalAmount: 31392,
+      farmerPayout: 19200,
+      totalAmount: 20928,
       status: 'Escrow Locked (100%)',
       reeferId: 'Eicher Pro Reefer (OD-33-F-7788)',
-      tempCelsius: '6.2°C (Freshness Assured)',
+      tempCelsius: '6.2°C (Optimal)',
       timestamp: 'Yesterday, 04:00 PM'
     }
   ]);
@@ -414,6 +414,29 @@ function App() {
                 />
               )}
 
+              {tab === 'reverse' && window.ReverseMarketplaceTab && (
+                <window.ReverseMarketplaceTab 
+                  currentUser={currentUser} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                />
+              )}
+
+              {tab === 'pooling' && window.TransportPoolingTab && (
+                <window.TransportPoolingTab currentUser={currentUser} />
+              )}
+
+              {tab === 'advisor' && window.SellNowAdvisorTab && (
+                <window.SellNowAdvisorTab />
+              )}
+
+              {tab === 'waste' && window.WasteToMoneyTab && (
+                <window.WasteToMoneyTab currentUser={currentUser} />
+              )}
+
+              {tab === 'equipment' && window.EquipmentSharingTab && (
+                <window.EquipmentSharingTab currentUser={currentUser} />
+              )}
+
               {tab === 'scanner' && window.ScannerTab && (
                 <window.ScannerTab 
                   selectedPreset={selectedPreset}
@@ -468,6 +491,13 @@ function App() {
                 />
               )}
 
+              {tab === 'reverse' && window.ReverseMarketplaceTab && (
+                <window.ReverseMarketplaceTab 
+                  currentUser={currentUser} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                />
+              )}
+
               {tab === 'market' && window.MarketplaceTab && (
                 <window.MarketplaceTab 
                   selectedCrop={selectedCrop}
@@ -489,8 +519,23 @@ function App() {
                 />
               )}
 
+              {tab === 'reverse' && window.ReverseMarketplaceTab && (
+                <window.ReverseMarketplaceTab 
+                  currentUser={currentUser} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                />
+              )}
+
               {tab === 'forecast' && window.ForecastTab && (
                 <window.ForecastTab />
+              )}
+
+              {tab === 'waste' && window.WasteToMoneyTab && (
+                <window.WasteToMoneyTab currentUser={currentUser} />
+              )}
+
+              {tab === 'pooling' && window.TransportPoolingTab && (
+                <window.TransportPoolingTab currentUser={currentUser} />
               )}
 
               {tab === 'logistics' && window.LogisticsTab && (
