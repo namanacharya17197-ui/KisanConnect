@@ -5,7 +5,17 @@ function App() {
   const commodities = window.COMMODITIES || [];
   const cvPresets = window.CV_PRESETS || [];
 
-  const [tab, setTab] = useState('farmer'); // Default to Farmer Portal
+  // Authentication State
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('kisansetu_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  const [tab, setTab] = useState('farmer');
   const [lots, setLots] = useState(initialLots);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -30,6 +40,53 @@ function App() {
       setSelectedPreset(window.CV_PRESETS[0]);
     }
   }, []);
+
+  // Handle Login
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setUserRole(user.role);
+    try {
+      localStorage.setItem('kisansetu_user', JSON.stringify(user));
+    } catch (e) {}
+
+    // Route directly to relevant division
+    if (user.role === 'farmer') {
+      setTab('farmer');
+    } else if (user.role === 'buyer') {
+      setTab('buyer');
+    } else if (user.role === 'bulk') {
+      setTab('bulk');
+    }
+
+    if (window.confetti) {
+      window.confetti({ 
+        particleCount: 60, 
+        spread: 75, 
+        origin: { y: 0.6 },
+        colors: ['#10b981', '#f59e0b', '#0284c7']
+      });
+    }
+  };
+
+  // Handle Guest Access
+  const handleGuestAccess = () => {
+    const guestUser = {
+      role: 'buyer',
+      name: 'Guest Explorer',
+      subtitle: 'Open Marketplace Access',
+      badge: 'Guest User',
+      avatar: '🌐'
+    };
+    handleLogin(guestUser);
+  };
+
+  // Handle Logout / Switch Account
+  const handleLogout = () => {
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem('kisansetu_user');
+    } catch (e) {}
+  };
 
   // Farmer adds new produce lot
   const handleAddLot = (newLot) => {
@@ -144,11 +201,31 @@ function App() {
     }, 900);
   };
 
+  // IF NOT LOGGED IN, RENDER LOGIN PAGE
+  if (!currentUser) {
+    return window.LoginPage ? (
+      <window.LoginPage 
+        onLogin={handleLogin} 
+        onGuestAccess={handleGuestAccess} 
+      />
+    ) : (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
+        <div className="text-center space-y-2">
+          <div className="text-4xl animate-bounce">🌾</div>
+          <p className="font-bold text-sm">Loading Kisan Setu Gateway...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // LOGGED IN DASHBOARD
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f9f6] text-[#1e293b]">
       {/* Top Header Division */}
       {window.Header && (
         <window.Header 
+          currentUser={currentUser}
+          onLogout={handleLogout}
           userRole={userRole} 
           setUserRole={setUserRole} 
           onOpenVoice={() => setShowVoiceModal(true)}

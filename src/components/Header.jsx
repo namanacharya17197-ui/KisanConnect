@@ -1,4 +1,13 @@
-function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount, onOpenCart }) {
+function Header({ 
+  currentUser, 
+  onLogout, 
+  userRole, 
+  setUserRole, 
+  onOpenVoice, 
+  onTabChange, 
+  cartItemCount, 
+  onOpenCart 
+}) {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-xs">
       {/* Top Telemetry Sovereign Strip */}
@@ -13,24 +22,44 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
           </span>
         </div>
 
+        {/* User Profile & Role Switcher */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <span className="text-slate-300 text-xs font-medium">Active Persona:</span>
-          <select 
-            value={userRole} 
-            onChange={(e) => {
-              const role = e.target.value;
-              setUserRole(role);
-              if (role === 'farmer') onTabChange('farmer');
-              else if (role === 'buyer') onTabChange('buyer');
-              else if (role === 'bulk') onTabChange('bulk');
-            }}
-            className="bg-emerald-900 text-white rounded-lg px-2.5 py-1 text-xs border border-emerald-700 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer"
-          >
-            <option value="farmer">🌾 Farmer (Produce Seller)</option>
-            <option value="buyer">🛒 Retail Buyer (Store Marketplace)</option>
-            <option value="bulk">🏢 Bulk Institutional Buyer (B2B Desk)</option>
-            <option value="logistics">🚚 Reefer Fleet (Cold Logistics)</option>
-          </select>
+          {currentUser ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm">{currentUser.avatar || '👤'}</span>
+              <div className="text-left hidden sm:block">
+                <span className="font-bold text-white text-xs block leading-tight">{currentUser.name}</span>
+                <span className="text-[10px] text-emerald-300 block leading-none">{currentUser.badge || currentUser.role}</span>
+              </div>
+              <button
+                onClick={onLogout}
+                className="px-2 py-0.5 rounded bg-emerald-900 hover:bg-emerald-800 text-slate-300 hover:text-white border border-emerald-700 text-[11px] font-semibold transition cursor-pointer"
+                title="Switch persona or logout"
+              >
+                Switch Account
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-slate-300 text-xs font-medium">Active Persona:</span>
+              <select 
+                value={userRole} 
+                onChange={(e) => {
+                  const role = e.target.value;
+                  setUserRole(role);
+                  if (role === 'farmer') onTabChange('farmer');
+                  else if (role === 'buyer') onTabChange('buyer');
+                  else if (role === 'bulk') onTabChange('bulk');
+                }}
+                className="bg-emerald-900 text-white rounded-lg px-2.5 py-1 text-xs border border-emerald-700 font-medium focus:outline-none focus:ring-1 focus:ring-emerald-400 cursor-pointer"
+              >
+                <option value="farmer">🌾 Farmer (Produce Seller)</option>
+                <option value="buyer">🛒 Retail Buyer (Store Marketplace)</option>
+                <option value="bulk">🏢 Bulk Institutional Buyer (B2B Desk)</option>
+                <option value="logistics">🚚 Reefer Fleet (Cold Logistics)</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -38,7 +67,7 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
         <div 
           className="flex items-center gap-3 cursor-pointer select-none group" 
-          onClick={() => onTabChange('store')}
+          onClick={() => onTabChange(userRole === 'farmer' ? 'farmer' : 'buyer')}
         >
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-amber-500 flex items-center justify-center text-white text-2xl font-bold shadow-md shadow-emerald-900/10 group-hover:scale-105 transition-transform duration-200">
             🌾
@@ -49,7 +78,7 @@ function Header({ userRole, setUserRole, onOpenVoice, onTabChange, cartItemCount
                 Kisan Setu
               </h1>
               <span className="text-[11px] px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold border border-emerald-200">
-                v2.4 E-Commerce
+                v2.4 Sovereign
               </span>
             </div>
             <p className="text-xs text-slate-500 hidden sm:block">
