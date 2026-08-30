@@ -19,11 +19,6 @@ function App() {
     try {
       localStorage.setItem('kisansetu_theme', theme);
     } catch (e) {}
-
-    // Register PWA Service Worker for offline capability
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -419,14 +414,6 @@ function App() {
                 />
               )}
 
-              {tab === 'trust' && window.TrustVerificationHub && (
-                <window.TrustVerificationHub currentUser={currentUser} />
-              )}
-
-              {tab === 'finance' && window.FinancialRailsTab && (
-                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
-              )}
-
               {tab === 'scanner' && window.ScannerTab && (
                 <window.ScannerTab 
                   selectedPreset={selectedPreset}
@@ -481,14 +468,6 @@ function App() {
                 />
               )}
 
-              {tab === 'trust' && window.TrustVerificationHub && (
-                <window.TrustVerificationHub currentUser={currentUser} />
-              )}
-
-              {tab === 'finance' && window.FinancialRailsTab && (
-                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
-              )}
-
               {tab === 'market' && window.MarketplaceTab && (
                 <window.MarketplaceTab 
                   selectedCrop={selectedCrop}
@@ -512,14 +491,6 @@ function App() {
 
               {tab === 'forecast' && window.ForecastTab && (
                 <window.ForecastTab />
-              )}
-
-              {tab === 'trust' && window.TrustVerificationHub && (
-                <window.TrustVerificationHub currentUser={currentUser} />
-              )}
-
-              {tab === 'finance' && window.FinancialRailsTab && (
-                <window.FinancialRailsTab currentUser={currentUser} lots={lots} />
               )}
 
               {tab === 'logistics' && window.LogisticsTab && (
