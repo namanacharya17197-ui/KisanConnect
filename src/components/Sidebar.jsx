@@ -10,67 +10,57 @@ function Sidebar({
   onOpenCart,
   onOpenVoice,
   isOpenMobile,
-  onCloseMobile
+  onCloseMobile,
+  lang = 'en'
 }) {
+  const t = (window.TRANSLATIONS && window.TRANSLATIONS[lang]) || window.TRANSLATIONS?.en || {};
+
   let navSections = [];
 
   if (userRole === 'farmer') {
     navSections = [
       {
-        sectionTitle: 'PRODUCER REVENUE',
+        sectionTitle: t.producerHub || 'PRODUCER REVENUE',
         items: [
-          { id: 'farmer', label: 'Farmer Dashboard', icon: '🌾', badge: 'Active', desc: 'Listings & Live Buyers' },
-          { id: 'reverse', label: 'Reverse Orders (HoReCa)', icon: '🔄', badge: 'Hot', desc: 'Hotels & Mess Demands' },
-          { id: 'advisor', label: 'Sell Now AI & Profit', icon: '🧠', badge: 'AI', desc: 'Net In-Hand Calculator' },
-          { id: 'waste', label: 'Waste to Money', icon: '♻️', badge: 'Extra ₹', desc: 'Sell B-Grade / Puree' }
+          { id: 'farmer', label: t.tabFarmer || 'Farmer Dashboard', icon: '🌾', badge: 'Active', desc: t.tabFarmerDesc || 'Listings & Live Buyers' },
+          { id: 'reverse', label: t.tabReverse || 'Reverse Orders (HoReCa)', icon: '🔄', badge: 'Hot', desc: t.tabReverseDesc || 'Hotels & Mess Demands' },
+          { id: 'advisor', label: t.tabAdvisor || 'Sell Now AI & Profit', icon: '🧠', badge: 'AI', desc: t.tabAdvisorDesc || 'Net In-Hand Calculator' },
+          { id: 'waste', label: t.tabWaste || 'Waste to Money', icon: '♻️', badge: 'Extra ₹', desc: t.tabWasteDesc || 'Sell B-Grade / Puree' }
         ]
       },
       {
-        sectionTitle: 'FARM LOGISTICS & TOOLS',
+        sectionTitle: t.logisticsHub || 'FARM LOGISTICS & TOOLS',
         items: [
-          { id: 'pooling', label: 'Shared Transport', icon: '🚚', badge: '-72%', desc: 'Group Nearby Trucks' },
-          { id: 'equipment', label: 'Equipment Sharing', icon: '🚜', badge: 'Rent', desc: 'Tractors & Harvesters' },
-          { id: 'scanner', label: 'AI Quality Assaying', icon: '🔬', badge: 'Edge CNN', desc: 'Brix & Defect Scan' },
-          { id: 'market', label: 'Mandi Price Index', icon: '🏪', badge: 'RBI Data', desc: 'Value Wedge Margins' }
+          { id: 'pooling', label: t.tabPooling || 'Shared Transport', icon: '🚚', badge: '-72%', desc: t.tabPoolingDesc || 'Group Nearby Trucks' },
+          { id: 'equipment', label: t.tabEquipment || 'Nearby Equipment', icon: '🚜', badge: 'Rent', desc: t.tabEquipmentDesc || 'Tractors & Machinery' },
+          { id: 'scanner', label: t.tabScanner || 'AI Quality Assaying', icon: '🔬', badge: 'Edge CNN', desc: t.tabScannerDesc || 'Brix & Defect Scan' },
+          { id: 'market', label: t.tabMarket || 'Mandi Price Index', icon: '🏪', badge: 'RBI Data', desc: t.tabMarketDesc || 'Value Wedge Margins' }
         ]
       }
     ];
   } else if (userRole === 'buyer') {
     navSections = [
       {
-        sectionTitle: 'BUYER STORE',
+        sectionTitle: t.buyerHub || 'BUYER STORE',
         items: [
-          { id: 'buyer', label: 'Produce Storefront', icon: '🛒', badge: 'Store', desc: 'Browse Fresh Lots' },
-          { id: 'buyer-orders', label: 'My Orders & Escrow', icon: '📦', badge: 'Active', desc: 'Cold Transit Tracking' },
-          { id: 'reverse', label: 'Post Requirement', icon: '🔄', badge: 'B2B/Mess', desc: 'HoReCa Direct Demand' },
-          { id: 'market', label: 'Mandi Savings Index', icon: '🏪', badge: 'Savings', desc: 'Consumer Price Benefit' }
+          { id: 'buyer', label: t.tabBuyer || 'Produce Storefront', icon: '🛒', badge: 'Store', desc: t.tabBuyerDesc || 'Browse Fresh Lots' },
+          { id: 'buyer-orders', label: t.tabBuyerOrders || 'My Orders & Escrow', icon: '📦', badge: 'Active', desc: t.tabBuyerOrdersDesc || 'Cold Transit Tracking' },
+          { id: 'reverse', label: t.tabReverse || 'Post Requirement', icon: '🔄', badge: 'B2B/Mess', desc: 'HoReCa Direct Demand' },
+          { id: 'market', label: t.tabMarket || 'Mandi Savings Index', icon: '🏪', badge: 'Savings', desc: 'Consumer Price Benefit' }
         ]
       }
     ];
   } else if (userRole === 'bulk') {
     navSections = [
       {
-        sectionTitle: 'B2B INSTITUTIONAL',
+        sectionTitle: t.b2bHub || 'B2B INSTITUTIONAL',
         items: [
-          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'Wholesale', desc: 'Multi-Ton RFQ Contracts' },
-          { id: 'reverse', label: 'Institutional Demands', icon: '🔄', badge: 'HoReCa', desc: 'Post Recurring Orders' },
-          { id: 'forecast', label: 'Forward Contracts', icon: '📈', badge: 'Escrow', desc: 'Pre-Harvest Locks' },
-          { id: 'waste', label: 'Factory Raw Materials', icon: '♻️', badge: 'Biomass', desc: 'Puree, Feed & Flakes' },
-          { id: 'pooling', label: 'Cold Corridors', icon: '🚚', badge: 'Fleet', desc: 'OR-Tools Routing' },
-          { id: 'macro', label: 'Macro Research', icon: '📊', badge: 'Empirical', desc: 'RBI & NABARD Data' }
-        ]
-      }
-    ];
-  } else {
-    navSections = [
-      {
-        sectionTitle: 'NAVIGATION',
-        items: [
-          { id: 'farmer', label: 'Farmer Portal', icon: '🌾', badge: 'Seller', desc: 'List Produce' },
-          { id: 'buyer', label: 'Buyer Store', icon: '🛒', badge: 'Store', desc: 'Shop Farmgate' },
-          { id: 'reverse', label: 'Reverse Marketplace', icon: '🔄', badge: 'Demands', desc: 'HoReCa Direct' },
-          { id: 'pooling', label: 'Shared Transport', icon: '🚚', badge: 'Logistics', desc: 'Freight Pooling' },
-          { id: 'bulk', label: 'Bulk B2B Desk', icon: '🏢', badge: 'B2B', desc: 'Multi-Ton Contracts' }
+          { id: 'bulk', label: t.tabBulk || 'Bulk B2B Desk', icon: '🏢', badge: 'Wholesale', desc: t.tabBulkDesc || 'Multi-Ton RFQ Contracts' },
+          { id: 'reverse', label: t.tabReverse || 'Institutional Demands', icon: '🔄', badge: 'HoReCa', desc: 'Post Recurring Orders' },
+          { id: 'forecast', label: t.tabForecast || 'Forward Contracts', icon: '📈', badge: 'Escrow', desc: t.tabForecastDesc || 'Pre-Harvest Locks' },
+          { id: 'waste', label: t.tabWaste || 'Factory Raw Materials', icon: '♻️', badge: 'Biomass', desc: 'Puree, Feed & Flakes' },
+          { id: 'pooling', label: t.tabPooling || 'Cold Corridors', icon: '🚚', badge: 'Fleet', desc: 'OR-Tools Routing' },
+          { id: 'macro', label: t.tabMacro || 'Macro Research', icon: '📊', badge: 'Empirical', desc: t.tabMacroDesc || 'RBI & NABARD Data' }
         ]
       }
     ];
@@ -102,14 +92,14 @@ function Sidebar({
               <div>
                 <div className="flex items-center gap-1.5">
                   <h1 className="font-extrabold text-lg text-emerald-950 dark:text-emerald-300 tracking-tight leading-tight">
-                    Kisan Setu
+                    {t.brandName || "Kisan Setu"}
                   </h1>
                   <span className="text-[10px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 rounded font-bold">
-                    v2.5
+                    v2.6
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none mt-0.5">
-                  Sovereign Agritech Rails
+                  {t.brandSubtitle || "Sovereign Agritech Rails"}
                 </p>
               </div>
             </div>
@@ -142,7 +132,7 @@ function Sidebar({
               <button
                 onClick={onLogout}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition cursor-pointer text-xs"
-                title="Sign Out / Switch Profile"
+                title={t.signOut || "Sign Out / Switch Profile"}
               >
                 🚪
               </button>
@@ -218,9 +208,9 @@ function Sidebar({
           >
             <div className="flex items-center gap-2">
               <span className="text-base">🎙️</span>
-              <span>Kisan Vani AI Voice</span>
+              <span>{t.voiceAssistant || "Kisan Vani AI"}</span>
             </div>
-            <span className="text-[10px] bg-amber-900/40 px-2 py-0.5 rounded-full">Speech AI</span>
+            <span className="text-[10px] bg-amber-900/40 px-2 py-0.5 rounded-full">{lang.toUpperCase()}</span>
           </button>
 
           {/* Cart Trigger (For Buyers) */}
@@ -231,10 +221,10 @@ function Sidebar({
             >
               <div className="flex items-center gap-2">
                 <span>🛒</span>
-                <span>Shopping Cart</span>
+                <span>{t.cart || "Shopping Cart"}</span>
               </div>
               <span className="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.2 rounded-full">
-                {cartItemCount} items
+                {cartItemCount}
               </span>
             </button>
           )}
@@ -242,13 +232,13 @@ function Sidebar({
           {/* Light / Dark Mode Toggle */}
           <div className="flex items-center justify-between pt-1">
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-              Theme Mode:
+              Theme:
             </span>
             <button
               onClick={onToggleTheme}
               className="px-2.5 py-1 rounded-xl bg-white dark:bg-[#1a253c] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-amber-300 font-bold text-xs hover:border-emerald-400 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
-              <span>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</span>
+              <span>{theme === 'dark' ? '☀️ ' + (t.lightMode || 'Light') : '🌙 ' + (t.darkMode || 'Dark')}</span>
             </button>
           </div>
         </div>

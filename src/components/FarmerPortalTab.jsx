@@ -1,557 +1,484 @@
-function FarmerPortalTab({ 
-  lots, 
-  onAddLot, 
-  onOpenCertificate, 
-  onOpenScanner,
-  orders = []
-}) {
-  const { useState } = React;
+function FarmerPortalTab({ lots, onAddLot, onOpenCertificate, onOpenScanner, orders = [], lang = 'en', onTriggerSimulatedOrder }) {
+  const { useState, useEffect } = React;
+  const t = (window.TRANSLATIONS && window.TRANSLATIONS[lang]) || window.TRANSLATIONS?.en || {};
 
-  const [activeSubTab, setActiveSubTab] = useState('orders'); // 'orders' | 'lots' | 'add'
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [activeSubTab, setActiveSubTab] = useState('lots'); // 'lots' or 'orders'
+  const [showAddLotModal, setShowAddLotModal] = useState(false);
+  const [livePurchaseAlert, setLivePurchaseAlert] = useState(null);
 
-  const [form, setForm] = useState({
-    crop: 'Alphonso Mango (Amrapali)',
-    category: 'Fruits',
-    variety: 'Amrapali A+',
-    grade: 'Export Grade A+',
-    qty: 1500,
-    pricePerKg: 88,
-    mandiPrice: 52,
+  // Auto trigger a live incoming purchase alert simulation after 3.5 seconds if none exists
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (orders.length > 0) {
+        setLivePurchaseAlert(orders[0]);
+      }
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Form State for listing new harvest produce
+  const [formData, setFormData] = useState({
+    crop: 'Hybrid Red Tomatoes',
+    category: 'Vegetables',
+    qty: 600,
+    pricePerKg: 26,
     farmer: 'Ramesh Patra',
-    phone: '+91 98612-33410',
     fpo: 'Sakhigopal Farmers Producer Co.',
     location: 'Sakhigopal, Puri',
-    harvestDate: 'Today, 06:00 AM',
-    coolingStatus: 'Pre-cooled at 6°C',
-    image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80',
-    brix: '16.5°',
-    defectPct: '0.4%',
-    description: 'Freshly harvested export grade mangoes assayed at farmgate with intact epicuticular bloom.'
+    phone: '+91 98612-33410',
+    minOrderKg: 30,
+    coolingStatus: 'Pre-cooled at 8°C',
+    description: 'Fresh farmgate harvest packed in reusable crates.'
   });
 
-  // Preset quick fill
-  const handleSelectPreset = (presetName) => {
-    if (presetName === 'mango') {
-      setForm((prev) => ({
-        ...prev,
-        crop: 'Alphonso Mango (Amrapali)',
-        category: 'Fruits',
-        variety: 'Amrapali A+',
-        grade: 'Export Grade A+',
-        pricePerKg: 88,
-        mandiPrice: 52,
-        brix: '16.5°',
-        defectPct: '0.4%',
-        image: 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80'
-      }));
-    } else if (presetName === 'banana') {
-      setForm((prev) => ({
-        ...prev,
-        crop: 'Robusta Bananas (Grand Naine)',
-        category: 'Fruits',
-        variety: 'Grand Naine Stage 5',
-        grade: 'Domestic Grade A',
-        pricePerKg: 33,
-        mandiPrice: 16,
-        brix: '14.8°',
-        defectPct: '1.8%',
-        image: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=800&q=80'
-      }));
-    } else if (presetName === 'tomato') {
-      setForm((prev) => ({
-        ...prev,
-        crop: 'Hybrid Red Tomatoes',
-        category: 'Vegetables',
-        variety: 'Pusa Ruby / Avinash',
-        grade: 'Retail Grade A',
-        pricePerKg: 24,
-        mandiPrice: 12,
-        brix: '5.4°',
-        defectPct: '3.1%',
-        image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80'
-      }));
-    } else if (presetName === 'chana') {
-      setForm((prev) => ({
-        ...prev,
-        crop: 'Desi Chana (Unpolished Pulse)',
-        category: 'Pulses',
-        variety: 'High Protein Desi',
-        grade: 'Prime Pulse Grade',
-        pricePerKg: 76,
-        mandiPrice: 62,
-        brix: 'Moisture 9.1%',
-        defectPct: '0.2%',
-        image: 'https://images.unsplash.com/photo-1515543237350-b3eea1ec8082?auto=format&fit=crop&w=800&q=80'
-      }));
-    }
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'qty' || name === 'pricePerKg' || name === 'minOrderKg' ? Number(value) : value
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    const totalVal = Number(form.qty) * Number(form.pricePerKg);
-    const mandiVal = Number(form.qty) * Number(form.mandiPrice);
-    const gainVal = totalVal - mandiVal;
-
     const newLot = {
       id: `lot-${Date.now()}`,
       lot: `LOT-${Math.floor(1000 + Math.random() * 9000)}`,
-      crop: form.crop,
-      category: form.category,
-      farmer: form.farmer,
-      phone: form.phone,
-      fpo: form.fpo,
-      location: form.location,
-      qty: Number(form.qty),
-      availableQty: Number(form.qty),
+      crop: formData.crop,
+      category: formData.category,
+      farmer: formData.farmer,
+      phone: formData.phone,
+      fpo: formData.fpo,
+      location: formData.location,
+      qty: formData.qty,
+      availableQty: formData.qty,
       unit: 'kg',
-      pricePerKg: Number(form.pricePerKg),
-      mandiPrice: Number(form.mandiPrice),
-      farmerGain: `+₹${gainVal.toLocaleString('en-IN')}`,
-      brix: form.brix,
-      defectPct: form.defectPct,
-      grade: form.grade,
-      verifiedBadge: 'AI Certified ' + form.grade,
-      image: form.image || 'https://images.unsplash.com/photo-1553279768-865429fa0078?auto=format&fit=crop&w=800&q=80',
-      harvestDate: form.harvestDate,
-      coolingStatus: form.coolingStatus,
-      minOrderKg: Math.min(50, Number(form.qty)),
-      bulkPricePerKg: Math.max(10, Math.round(Number(form.pricePerKg) * 0.94)),
-      description: form.description,
+      pricePerKg: formData.pricePerKg,
+      mandiPrice: Math.round(formData.pricePerKg * 0.58),
+      farmerGain: `+₹${Math.round(formData.qty * formData.pricePerKg * 0.42).toLocaleString('en-IN')}`,
+      brix: '5.2°',
+      defectPct: '0.8%',
+      grade: 'Grade A+',
+      verifiedBadge: 'AI Certified Grade A+',
+      image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=800&q=80',
+      harvestDate: 'Just Now',
+      coolingStatus: formData.coolingStatus,
+      minOrderKg: formData.minOrderKg,
+      bulkPricePerKg: Math.round(formData.pricePerKg * 0.92),
+      description: formData.description,
       status: 'Active'
     };
 
     onAddLot(newLot);
-    setShowAddForm(false);
-    setActiveSubTab('lots');
+    setShowAddLotModal(false);
   };
 
-  const totalCalculatedValue = (Number(form.qty) || 0) * (Number(form.pricePerKg) || 0);
-  const mandiCalculatedValue = (Number(form.qty) || 0) * (Number(form.mandiPrice) || 0);
-  const extraGainCalculated = totalCalculatedValue - mandiCalculatedValue;
+  // Trigger simulated purchase popup
+  const handleSimulateNewOrder = () => {
+    const buyers = [
+      { name: 'BigBasket Metro Fulfillment Hub', type: 'Supermarket Chain (Retail B2B)', location: 'Bhubaneswar Hub-2', avatar: '🏬', crop: 'Alphonso Mango', qty: 250, price: 88 },
+      { name: 'Hotel Mayfair Lagoon', type: 'Luxury Hotel / HoReCa', location: 'Jaydev Vihar Kitchen', avatar: '🏨', crop: 'Hybrid Red Tomatoes', qty: 180, price: 28 },
+      { name: 'KIIT University Hostel Mess #4', type: 'University Mess', location: 'Patia Mega Kitchen', avatar: '🎓', crop: 'Fresh Potatoes & Onions', qty: 500, price: 24 },
+      { name: 'Apollo Hospital Healthcare Kitchen', type: 'Hospital Dietary', location: 'Sainik School Road', avatar: '🏥', crop: 'Fresh Spinach & Vegetables', qty: 120, price: 32 }
+    ];
 
-  const totalEarningsInEscrow = orders.reduce((sum, ord) => sum + (ord.farmerPayout || (ord.qty * ord.pricePerKg)), 0);
-  const totalVolumeSold = orders.reduce((sum, ord) => sum + ord.qty, 0);
+    const randomBuyer = buyers[Math.floor(Math.random() * buyers.length)];
+    const mockOrder = {
+      orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
+      buyerName: randomBuyer.name,
+      buyerType: randomBuyer.type,
+      buyerLocation: randomBuyer.location,
+      buyerAvatar: randomBuyer.avatar,
+      crop: randomBuyer.crop,
+      lotId: `LOT-${Math.floor(1000 + Math.random() * 9000)}`,
+      farmerName: 'Ramesh Patra (You)',
+      location: 'Sakhigopal, Puri',
+      qty: randomBuyer.qty,
+      pricePerKg: randomBuyer.price,
+      farmerPayout: randomBuyer.qty * randomBuyer.price,
+      totalAmount: Math.round(randomBuyer.qty * randomBuyer.price * 1.09),
+      status: 'Escrow Locked (100%)',
+      reeferId: 'Mahindra Bolero Reefer (OD-02-B-1142)',
+      tempCelsius: '5.2°C (Freshness Assured)',
+      timestamp: 'Just Now'
+    };
+
+    setLivePurchaseAlert(mockOrder);
+    if (onTriggerSimulatedOrder) onTriggerSimulatedOrder(mockOrder);
+
+    if (window.confetti) {
+      window.confetti({ particleCount: 75, spread: 85, origin: { y: 0.55 } });
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Farmer Hero Banner */}
-      <div className="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-semibold border border-amber-400/30">
-            <span>🌾 Farmer Seller Gateway (Producer Portal)</span>
-            <span>•</span>
-            <span>Zero Brokerage • 100% Escrow Protected Payouts</span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Direct Farmgate Produce Management & Buyer Orders
-          </h2>
-          <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
-            List your harvest lots with verified AI quality parameters, track incoming orders from verified buyers, and receive automated UPI/e-RUPI payouts the instant produce is loaded into cold-chain reefer vans.
-          </p>
-
-          <div className="flex flex-wrap gap-4 pt-2 text-xs">
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-amber-300 font-bold">₹{totalEarningsInEscrow.toLocaleString('en-IN')}</span> Total Payout in Escrow
-            </div>
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-emerald-300 font-bold">{orders.length}</span> Active Buyer Orders
-            </div>
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-teal-300 font-bold">{totalVolumeSold} kg</span> Produce Committed
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Farmer Sub-Navigation Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm">
-        <div className="flex gap-2">
-          <button
-            onClick={() => { setActiveSubTab('orders'); setShowAddForm(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-2 ${
-              activeSubTab === 'orders'
-                ? 'bg-emerald-800 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            <span>👥</span>
-            <span>Incoming Buyer Orders ({orders.length})</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveSubTab('lots'); setShowAddForm(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer flex items-center gap-2 ${
-              activeSubTab === 'lots'
-                ? 'bg-emerald-800 text-white shadow-sm'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
-          >
-            <span>📋</span>
-            <span>My Active Lots ({lots.length})</span>
-          </button>
-        </div>
-
-        <button
-          onClick={() => { setShowAddForm(!showAddForm); setActiveSubTab('add'); }}
-          className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs shadow-md transition cursor-pointer flex items-center gap-1.5"
-        >
-          <span>➕</span>
-          <span>{showAddForm ? 'Close Entry Form' : 'List New Harvest Lot'}</span>
-        </button>
-      </div>
-
-      {/* 1. INCOMING BUYER ORDERS ("WHO IS BUYING THE PRODUCT") */}
-      {activeSubTab === 'orders' && !showAddForm && (
-        <div className="bg-white rounded-2xl p-5 sm:p-7 border border-slate-200 shadow-sm space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
-                Live Sales & Procurement Feed
-              </span>
-              <h3 className="font-extrabold text-lg text-slate-900">
-                Who Is Buying Your Produce (Live Escrow Orders)
-              </h3>
-              <p className="text-xs text-slate-500">
-                Real-time buyer identity, contracted quantities, cold transit dispatch, and automated escrow payout status.
-              </p>
-            </div>
-            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold text-xs">
-              {orders.length} Verified Procurement Contracts
-            </span>
-          </div>
-
-          {orders.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 space-y-2">
-              <div className="text-4xl">📦</div>
-              <p className="font-bold text-slate-600 text-sm">No incoming orders yet</p>
-              <p className="text-xs">Once retail or bulk buyers purchase your lots, their order and payment details will appear here live.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {orders.map((ord, idx) => (
-                <div 
-                  key={ord.orderId || idx}
-                  className="p-5 rounded-2xl bg-slate-50 border border-slate-200 hover:border-emerald-500 transition-all space-y-4 shadow-xs"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-900 flex items-center justify-center text-xl font-bold">
-                        {ord.buyerAvatar || '🏬'}
-                      </div>
-                      <div>
-                        <span className="font-mono font-bold text-[10px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                          {ord.orderId || `ORD-${8800 + idx}`}
-                        </span>
-                        <h4 className="font-extrabold text-sm text-slate-900 leading-snug mt-0.5">
-                          {ord.buyerName || 'BigBasket Fulfillment Hub'}
-                        </h4>
-                        <p className="text-[11px] text-slate-500">{ord.buyerType || 'Verified Retail Supermarket'} • {ord.buyerLocation || 'Bhubaneswar'}</p>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                      {ord.status || 'Escrow Locked (100%)'}
-                    </span>
-                  </div>
-
-                  {/* Order Spec Box */}
-                  <div className="p-3 rounded-xl bg-white border border-slate-200/80 text-xs space-y-1.5">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Purchased Crop:</span>
-                      <strong className="text-slate-900">{ord.crop} ({ord.lotId || 'LOT-8821'})</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Purchased Volume:</span>
-                      <strong className="text-emerald-800">{ord.qty} kg</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Contracted Rate:</span>
-                      <strong>₹{ord.pricePerKg} / kg</strong>
-                    </div>
-                    <div className="pt-1.5 border-t border-slate-100 flex justify-between font-extrabold text-sm text-emerald-950">
-                      <span>Direct Farmer Payout:</span>
-                      <span className="text-emerald-800">
-                        ₹{(ord.farmerPayout || (ord.qty * ord.pricePerKg)).toLocaleString('en-IN')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Cold Logistics Dispatch Status */}
-                  <div className="p-2.5 rounded-xl bg-teal-50 border border-teal-200 text-[11px] flex justify-between items-center text-teal-900">
-                    <div className="flex items-center gap-1.5">
-                      <span>🚚</span>
-                      <span><strong>Dispatch:</strong> {ord.reeferId || 'Tata 709 Reefer (OD-01)'}</span>
-                    </div>
-                    <span className="font-bold text-teal-700">Temp: {ord.tempCelsius || '4.8°C (Optimal)'}</span>
-                  </div>
-
-                  <div className="pt-2 flex justify-between items-center text-xs">
-                    <span className="text-[11px] text-slate-400">
-                      Payment Release: <strong>Instant UPI on Cold Gate</strong>
-                    </span>
-                    <button
-                      onClick={() => alert(`Verified Dispatch for Order ${ord.orderId || `ORD-${8800 + idx}`}. Payout release triggered!`)}
-                      className="px-3 py-1.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs transition cursor-pointer"
-                    >
-                      Confirm Dispatch
-                    </button>
-                  </div>
+    <div className="space-y-6 animate-in fade-in duration-200">
+      
+      {/* 1. REAL-TIME LIVE INCOMING PURCHASE POPUP TOAST */}
+      {livePurchaseAlert && (
+        <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 border-2 border-emerald-400 rounded-3xl p-5 sm:p-6 text-white shadow-2xl animate-bounce-short relative overflow-hidden">
+          <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-48 h-48 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+          
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-4 min-w-0">
+              <div className="w-14 h-14 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center text-3xl font-black shadow-lg flex-shrink-0 animate-pulse">
+                🔔
+              </div>
+              <div className="min-w-0 space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider">
+                    {t.liveBuyerAlert || "Live Purchase Alert"}
+                  </span>
+                  <span className="text-xs text-emerald-300 font-bold">
+                    • 100% Escrow Deposited
+                  </span>
                 </div>
-              ))}
+                <h3 className="font-extrabold text-base sm:text-lg text-white leading-tight">
+                  {livePurchaseAlert.buyerName} just bought {livePurchaseAlert.qty} kg of {livePurchaseAlert.crop}!
+                </h3>
+                <p className="text-xs text-emerald-100">
+                  Total Payout: <strong className="text-amber-300 text-sm">₹{livePurchaseAlert.farmerPayout.toLocaleString('en-IN')}</strong> • Vehicle: <span className="font-mono text-emerald-200">{livePurchaseAlert.reeferId}</span>
+                </p>
+              </div>
             </div>
-          )}
+
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => {
+                  setActiveSubTab('orders');
+                  setLivePurchaseAlert(null);
+                }}
+                className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-extrabold text-xs shadow-md transition cursor-pointer"
+              >
+                View Payout Feed ➔
+              </button>
+              <button
+                onClick={() => setLivePurchaseAlert(null)}
+                className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-bold text-xs cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-      {/* 2. ADD PRODUCE LOT FORM */}
-      {showAddForm && (
-        <div className="bg-white rounded-2xl p-5 sm:p-7 border border-slate-200 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-            <div>
-              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
-                Produce Listing Wizard
-              </span>
-              <h3 className="font-extrabold text-lg text-slate-900">
-                List New Harvest Lot on National Network
-              </h3>
-            </div>
+      {/* Top Hero Banner */}
+      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="relative z-10 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-semibold border border-emerald-400/30">
+            <span>🌾 Producer Portal • Direct Farmgate</span>
+            <span>•</span>
+            <span>Zero Middlemen / Dalal Cut</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            {t.farmerPortalTitle || "Direct Farmgate Produce Management & Live Buyers"}
+          </h2>
+          <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
+            {t.farmerPortalSubtitle || "List your harvest lots, track incoming live buyers in real time, and get instant smart escrow payouts."}
+          </p>
 
-            {/* Quick Presets */}
-            <div className="flex flex-wrap gap-1.5 items-center">
-              <span className="text-xs text-slate-400 font-medium mr-1">Quick Presets:</span>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('mango')}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
-              >
-                🥭 Mango
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('banana')}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
-              >
-                🍌 Banana
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('tomato')}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
-              >
-                🍅 Tomato
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSelectPreset('chana')}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-emerald-100 text-xs font-semibold text-slate-700 cursor-pointer"
-              >
-                🌱 Chana
-              </button>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              onClick={() => setShowAddLotModal(true)}
+              className="px-4 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-xs shadow-lg shadow-emerald-900/30 transition cursor-pointer flex items-center gap-2"
+            >
+              <span>➕</span>
+              <span>{t.addLotBtn || "List New Harvest Lot"}</span>
+            </button>
+
+            <button
+              onClick={handleSimulateNewOrder}
+              className="px-3.5 py-2 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 font-bold text-xs transition cursor-pointer flex items-center gap-2"
+            >
+              <span>🔔</span>
+              <span>Simulate Buyer Order Popup</span>
+            </button>
+
+            <button
+              onClick={onOpenScanner}
+              className="px-3.5 py-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold text-xs transition cursor-pointer flex items-center gap-1.5"
+            >
+              <span>🔬</span>
+              <span>AI Quality Assaying Scan</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sub-Navigation Switcher (My Lots vs Incoming Orders) */}
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setActiveSubTab('lots')}
+            className={`px-4 py-2 rounded-2xl font-extrabold text-xs transition cursor-pointer flex items-center gap-2 ${
+              activeSubTab === 'lots'
+                ? 'bg-emerald-900 text-white shadow-sm'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+            }`}
+          >
+            <span>🌾</span>
+            <span>{t.myLotsBtn || "My Active Lots"} ({lots.length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSubTab('orders')}
+            className={`px-4 py-2 rounded-2xl font-extrabold text-xs transition cursor-pointer flex items-center gap-2 ${
+              activeSubTab === 'orders'
+                ? 'bg-emerald-900 text-white shadow-sm'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+            }`}
+          >
+            <span>🔔</span>
+            <span>{t.incomingOrdersBtn || "Incoming Buyer Orders"} ({orders.length})</span>
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+          </button>
+        </div>
+
+        <span className="text-xs text-slate-500 dark:text-slate-400 hidden sm:inline">
+          Connected to <strong>14 Reefer Corridors</strong>
+        </span>
+      </div>
+
+      {/* VIEW 1: MY ACTIVE HARVEST LOTS */}
+      {activeSubTab === 'lots' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {lots.map((lot) => (
+            <div
+              key={lot.id}
+              className="bg-white dark:bg-[#131d31] rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 shadow-sm transition-all duration-200 overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div className="relative h-44 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <img
+                    src={lot.image}
+                    alt={lot.crop}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute top-3 left-3 flex gap-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
+                      {lot.lot}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-bold">
+                      {lot.category || 'Produce'}
+                    </span>
+                  </div>
+
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-xl bg-emerald-950/90 text-amber-300 font-extrabold text-xs">
+                    ₹{lot.pricePerKg} / kg
+                  </div>
+                </div>
+
+                <div className="p-5 space-y-3">
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white leading-tight">
+                      {lot.crop}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {lot.location} • {lot.fpo}
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200/80 dark:border-slate-700/60 text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Available Volume:</span>
+                      <strong className="text-slate-900 dark:text-white">{lot.availableQty || lot.qty} kg</strong>
+                    </div>
+                    <div className="flex justify-between text-emerald-700 dark:text-emerald-400 font-bold">
+                      <span>Mandi Trader Price:</span>
+                      <span className="line-through text-slate-400">₹{lot.mandiPrice}/kg</span>
+                    </div>
+                    <div className="flex justify-between text-emerald-800 dark:text-emerald-300 font-extrabold">
+                      <span>Direct Farmer Value Gain:</span>
+                      <span>{lot.farmerGain}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 pt-0">
+                <button
+                  onClick={onOpenCertificate}
+                  className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs transition cursor-pointer"
+                >
+                  View AI Quality Certificate ➔
+                </button>
+              </div>
             </div>
+          ))}
+        </div>
+      )}
+
+      {/* VIEW 2: WHO IS BUYING YOUR PRODUCE (INCOMING ORDERS FEED) */}
+      {activeSubTab === 'orders' && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+              {t.whoIsBuyingTitle || "Who Is Buying Your Produce (Live Escrow Orders)"}
+            </h3>
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+              ● Live Smart Escrow Stream
+            </span>
           </div>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Crop Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.crop}
-                    onChange={(e) => setForm({ ...form, crop: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                  />
+          <div className="space-y-3">
+            {orders.map((ord, idx) => (
+              <div
+                key={idx}
+                className="bg-white dark:bg-[#131d31] p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-emerald-400 transition"
+              >
+                <div className="flex items-start gap-3.5 min-w-0">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 flex items-center justify-center text-2xl flex-shrink-0">
+                    {ord.buyerAvatar || '🛒'}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                        {ord.orderId}
+                      </span>
+                      <span className="text-xs text-slate-400">• {ord.timestamp}</span>
+                    </div>
+                    <h4 className="font-extrabold text-sm text-slate-900 dark:text-white mt-0.5 truncate">
+                      {ord.buyerName}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {ord.buyerType} • {ord.buyerLocation}
+                    </p>
+                    <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1">
+                      Purchased: <strong className="text-emerald-700 dark:text-emerald-400">{ord.qty} kg</strong> of {ord.crop}
+                    </div>
+                  </div>
                 </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-xs">
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200/80 dark:border-slate-700/60 space-y-0.5">
+                    <span className="text-slate-500">Farmer Payout:</span>
+                    <div className="text-base font-black text-emerald-700 dark:text-emerald-400">
+                      ₹{ord.farmerPayout.toLocaleString('en-IN')}
+                    </div>
+                    <span className="text-[10px] text-emerald-600 block">Status: {ord.status}</span>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200/80 dark:border-slate-700/60 space-y-0.5">
+                    <span className="text-slate-500">Reefer Cold Transit:</span>
+                    <div className="font-bold text-slate-800 dark:text-slate-200 text-xs">
+                      {ord.reeferId}
+                    </div>
+                    <span className="text-[10px] text-teal-600 block">Temp: {ord.tempCelsius}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Add Harvest Produce Lot */}
+      {showAddLotModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#131d31] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🌾</span>
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                  {t.addLotBtn || "List New Harvest Lot"}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowAddLotModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold text-sm cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleFormSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Category:</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Crop / Commodity:</label>
                   <select
-                    value={form.category}
-                    onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
+                    name="crop"
+                    value={formData.crop}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 font-bold bg-white dark:bg-[#1a253c] text-slate-900 dark:text-white"
                   >
-                    <option value="Fruits">Fruits</option>
+                    <option value="Hybrid Red Tomatoes">🍅 Hybrid Red Tomatoes</option>
+                    <option value="Chandramukhi Potatoes">🥔 Fresh Chandramukhi Potatoes</option>
+                    <option value="Nashik Red Onions">🧅 Nashik Red Onions</option>
+                    <option value="Tender Purple Brinjal">🍆 Tender Purple Brinjal</option>
+                    <option value="Farmgate Broccoli">🥦 Farmgate Broccoli</option>
+                    <option value="Green Bell Peppers (Capsicum)">🫑 Green Bell Peppers</option>
+                    <option value="Fresh Spinach (Palak)">🥬 Fresh Spinach (Palak)</option>
+                    <option value="English Cucumbers">🥒 English Cucumbers</option>
+                    <option value="Alphonso Mango (Amrapali)">🥭 Alphonso Mango (Amrapali)</option>
+                    <option value="Robusta Bananas">🍌 Robusta Bananas</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Produce Category:</label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 font-bold bg-white dark:bg-[#1a253c] text-slate-900 dark:text-white"
+                  >
                     <option value="Vegetables">Vegetables</option>
+                    <option value="Fruits">Fruits</option>
                     <option value="Pulses">Pulses & Grains</option>
                   </select>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Harvest Volume (kg):</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Harvest Quantity (kg):</label>
                   <input
                     type="number"
-                    min="10"
+                    name="qty"
                     required
-                    value={form.qty}
-                    onChange={(e) => setForm({ ...form, qty: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-bold"
+                    min="20"
+                    value={formData.qty}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 font-bold bg-white dark:bg-[#1a253c] text-slate-900 dark:text-white"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-bold text-emerald-800 mb-1">Your Price (₹ / kg):</label>
+                  <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">Direct Farmgate Rate (₹/kg):</label>
                   <input
                     type="number"
-                    min="1"
-                    step="0.5"
+                    name="pricePerKg"
                     required
-                    value={form.pricePerKg}
-                    onChange={(e) => setForm({ ...form, pricePerKg: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-emerald-400 bg-emerald-50/50 text-emerald-900 font-bold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">Mandi Offer (₹ / kg):</label>
-                  <input
-                    type="number"
-                    min="1"
-                    step="0.5"
-                    value={form.mandiPrice}
-                    onChange={(e) => setForm({ ...form, mandiPrice: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium"
+                    min="5"
+                    value={formData.pricePerKg}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 font-bold bg-white dark:bg-[#1a253c] text-slate-900 dark:text-white"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">AI Quality Grade:</label>
-                  <select
-                    value={form.grade}
-                    onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                  >
-                    <option value="Export Grade A+">Export Grade A+</option>
-                    <option value="Domestic Grade A">Domestic Grade A</option>
-                    <option value="Processing Grade B">Processing Grade B</option>
-                  </select>
+              <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                  <span>Gross Lot Value:</span>
+                  <span className="font-bold">₹{(formData.qty * formData.pricePerKg).toLocaleString('en-IN')}</span>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Cooling / Storage:</label>
-                  <select
-                    value={form.coolingStatus}
-                    onChange={(e) => setForm({ ...form, coolingStatus: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                  >
-                    <option value="Pre-cooled at 6°C">Pre-cooled at 6°C</option>
-                    <option value="Ventilated Crate Stack">Ventilated Crate Stack</option>
-                    <option value="Hermetic Solar Silo">Hermetic Solar Silo</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Farmer / FPO Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.farmer}
-                    onChange={(e) => setForm({ ...form, farmer: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 font-medium"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">Farm Location:</label>
-                  <input
-                    type="text"
-                    required
-                    value={form.location}
-                    onChange={(e) => setForm({ ...form, location: e.target.value })}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 font-medium"
-                  />
+                <div className="flex justify-between text-emerald-800 dark:text-emerald-300 font-extrabold text-sm pt-1 border-t border-emerald-200 dark:border-emerald-800">
+                  <span>Guaranteed Smart Escrow Payout:</span>
+                  <span>₹{(formData.qty * formData.pricePerKg).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-md transition cursor-pointer"
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2"
               >
-                Publish Lot to Live Marketplace
+                <span>🚀</span>
+                <span>Publish Produce Lot to National Marketplace</span>
               </button>
-            </div>
-
-            {/* Real-time Valuation Card */}
-            <div className="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4 flex flex-col justify-between">
-              <div className="space-y-3">
-                <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-                  📊 Real-Time Valuation Summary
-                </span>
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200 space-y-2 text-xs">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Total Lot Volume:</span>
-                    <strong>{form.qty} kg</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Setu Direct Rate:</span>
-                    <strong className="text-emerald-700">₹{form.pricePerKg} / kg</strong>
-                  </div>
-                  <div className="pt-2 border-t border-slate-100 flex justify-between font-extrabold text-sm text-emerald-950">
-                    <span>Total Farmer Payout:</span>
-                    <span className="text-emerald-800">₹{totalCalculatedValue.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
-                <div className="p-3.5 rounded-xl bg-emerald-800 text-white text-xs space-y-1">
-                  <div className="text-amber-300 font-extrabold text-base">
-                    +₹{extraGainCalculated.toLocaleString('en-IN')} Extra Profit
-                  </div>
-                  <p className="text-[10px] text-emerald-200">
-                    Direct payout guaranteed via smart escrow.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
-
-      {/* 3. MY ACTIVE LOTS */}
-      {activeSubTab === 'lots' && !showAddForm && (
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
-          <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-            <h3 className="font-extrabold text-base text-slate-900">
-              Your Active Listed Harvest Lots ({lots.length} Lots)
-            </h3>
-            <span className="text-xs font-mono text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-              Live on National Network
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {lots.map((lot, idx) => (
-              <div key={lot.id || idx} className="p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-emerald-400 transition-all space-y-3">
-                <div className="flex justify-between items-start">
-                  <span className="font-mono font-bold text-xs text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                    {lot.lot}
-                  </span>
-                  <span className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px]">
-                    {lot.status || 'Active'}
-                  </span>
-                </div>
-
-                <div className="flex gap-3 items-center">
-                  <img src={lot.image} alt={lot.crop} className="w-14 h-14 rounded-lg object-cover border border-slate-200 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-bold text-sm text-slate-900 leading-tight">{lot.crop}</h4>
-                    <p className="text-xs text-slate-500">{lot.location}</p>
-                    <p className="text-xs font-bold text-emerald-800">₹{lot.pricePerKg} / kg • {lot.qty} kg</p>
-                  </div>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-white text-xs space-y-1 border border-slate-100">
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Total Lot Value:</span>
-                    <strong>₹{(lot.qty * lot.pricePerKg).toLocaleString('en-IN')}</strong>
-                  </div>
-                  <div className="flex justify-between text-emerald-700 font-semibold">
-                    <span>Farmer Gain:</span>
-                    <span>{lot.farmerGain}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
+            </form>
           </div>
         </div>
       )}

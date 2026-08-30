@@ -1,32 +1,40 @@
-function EquipmentSharingTab({ currentUser }) {
-  const { useState } = React;
+function EquipmentSharingTab({ currentUser, lang = 'en' }) {
+  const { useState, useMemo } = React;
+  const t = (window.TRANSLATIONS && window.TRANSLATIONS[lang]) || window.TRANSLATIONS?.en || {};
 
-  const [equipmentList, setEquipmentList] = useState([
+  const [selectedRadius, setSelectedRadius] = useState(15); // max km filter
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const allEquipment = [
     {
       id: 'EQP-501',
       name: 'Mahindra 575 DI Tractor (45 HP) + Rotavator',
       category: 'Tractor & Tillage',
       ownerFarmer: 'Bikash Mahapatra',
-      ownerVillage: 'Pipili (4.2 km away)',
+      ownerVillage: 'Sakhigopal Ward 2',
+      distanceKm: 1.8,
+      estimatedArrival: '15 mins delivery',
       avatar: '🚜',
       dailyRent: 850,
       hourlyRent: 150,
       rating: '4.9 ★ (32 rentals)',
-      availability: 'Available Tomorrow Morning',
+      availability: 'Available Immediately',
       condition: 'Excellent • Diesel full tank provided'
     },
     {
-      id: 'EQP-502',
-      name: 'Claas Crop Tiger Mini Combine Harvester',
-      category: 'Harvesting Machinery',
-      ownerFarmer: 'Dhiren Swain',
-      ownerVillage: 'Nimapada (7.8 km away)',
-      avatar: '🌾',
-      dailyRent: 2200,
-      hourlyRent: 350,
-      rating: '4.8 ★ (19 rentals)',
-      availability: 'Available This Weekend',
-      condition: 'Serviced last week • Includes experienced operator'
+      id: 'EQP-504',
+      name: 'Precision Laser Land Leveler + Transmitter',
+      category: 'Land Prep',
+      ownerFarmer: 'Gouranga Charan',
+      ownerVillage: 'Teisipur Junction',
+      distanceKm: 3.1,
+      estimatedArrival: '25 mins delivery',
+      avatar: '📐',
+      dailyRent: 1100,
+      hourlyRent: 200,
+      rating: '4.9 ★ (21 rentals)',
+      availability: 'Available Today',
+      condition: 'Dual slope hydraulic control'
     },
     {
       id: 'EQP-503',
@@ -34,6 +42,8 @@ function EquipmentSharingTab({ currentUser }) {
       category: 'Irrigation & Pumping',
       ownerFarmer: 'Ramesh Patra (You)',
       ownerVillage: 'Sakhigopal Ward 4',
+      distanceKm: 0.5,
+      estimatedArrival: 'Immediate (Your Cluster)',
       avatar: '⚡',
       dailyRent: 300,
       hourlyRent: 50,
@@ -42,19 +52,60 @@ function EquipmentSharingTab({ currentUser }) {
       condition: 'Solar PV Panels + 100m Delivery Pipe'
     },
     {
-      id: 'EQP-504',
-      name: 'Precision Laser Land Leveler + Transmitter',
-      category: 'Land Prep',
-      ownerFarmer: 'Gouranga Charan',
-      ownerVillage: 'Teisipur (3.1 km away)',
-      avatar: '📐',
-      dailyRent: 1100,
-      hourlyRent: 200,
-      rating: '4.9 ★ (21 rentals)',
+      id: 'EQP-502',
+      name: 'Claas Crop Tiger Mini Combine Harvester',
+      category: 'Harvesting Machinery',
+      ownerFarmer: 'Dhiren Swain',
+      ownerVillage: 'Pipili FPO Center',
+      distanceKm: 4.8,
+      estimatedArrival: '40 mins delivery',
+      avatar: '🌾',
+      dailyRent: 2200,
+      hourlyRent: 350,
+      rating: '4.8 ★ (19 rentals)',
+      availability: 'Available Tomorrow Morning',
+      condition: 'Serviced last week • Includes experienced operator'
+    },
+    {
+      id: 'EQP-505',
+      name: 'Power Tiller (13 HP) with Wet Puddling Blades',
+      category: 'Tractor & Tillage',
+      ownerFarmer: 'Santosh Nayak',
+      ownerVillage: 'Balipatna Border',
+      distanceKm: 7.4,
+      estimatedArrival: '1 hour transit',
+      avatar: '⚙️',
+      dailyRent: 550,
+      hourlyRent: 90,
+      rating: '4.7 ★ (16 rentals)',
       availability: 'Available on Thursday',
-      condition: 'Dual slope hydraulic control'
+      condition: 'Compact size, ideal for small paddy plots'
+    },
+    {
+      id: 'EQP-506',
+      name: 'Boom Sprayer (Tractor Mounted 400L Tank)',
+      category: 'Spraying & Crop Care',
+      ownerFarmer: 'Pranab Sahoo',
+      ownerVillage: 'Nimapada Bypass',
+      distanceKm: 9.6,
+      estimatedArrival: '1.5 hours transit',
+      avatar: '🚿',
+      dailyRent: 700,
+      hourlyRent: 120,
+      rating: '4.9 ★ (28 rentals)',
+      availability: 'Available Tomorrow',
+      condition: 'Uniform micron droplet nozzles for bio-pesticides'
     }
-  ]);
+  ];
+
+  // Filter nearby only
+  const filteredEquipment = useMemo(() => {
+    return allEquipment.filter((item) => {
+      const matchDistance = item.distanceKm <= selectedRadius;
+      const matchCategory = selectedCategory === 'All' || item.category === selectedCategory;
+      return matchDistance && matchCategory;
+    }).sort((a, b) => a.distanceKm - b.distanceKm); // Nearest first
+  }, [selectedRadius, selectedCategory]);
 
   const [bookingItem, setBookingItem] = useState(null);
   const [bookingDays, setBookingDays] = useState(1);
@@ -68,12 +119,13 @@ function EquipmentSharingTab({ currentUser }) {
     }
 
     alert(
-      `🎉 Machinery Booking Confirmed!\n\n` +
+      `🎉 Nearby Machinery Booking Confirmed!\n\n` +
       `• Equipment: ${bookingItem.name}\n` +
       `• Owner: ${bookingItem.ownerFarmer} (${bookingItem.ownerVillage})\n` +
+      `• Distance: 📍 ${bookingItem.distanceKm} km away (${bookingItem.estimatedArrival})\n` +
       `• Duration: ${bookingDays} Day(s)\n` +
       `• Total Rental: ₹${(bookingDays * bookingItem.dailyRent).toLocaleString('en-IN')}\n\n` +
-      `Owner notified. GPS dispatch coordinated through FPO hub.`
+      `Direct farmgate dispatch coordinated. Zero long-distance transit fees!`
     );
 
     setBookingItem(null);
@@ -82,71 +134,104 @@ function EquipmentSharingTab({ currentUser }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Banner */}
-      <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+      <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-emerald-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative z-10 space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold border border-teal-400/30">
-            <span>🚜 Farmer-to-Farmer Equipment & Machinery Sharing</span>
+            <span>📍 Nearby-Only Equipment Sharing Protocol</span>
             <span>•</span>
-            <span>Slash Capital Input Costs</span>
+            <span>Hyperlocal Cluster Radius (&lt; 15 km)</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Share Heavy Machinery: Rent Tractors, Harvesters & Solar Pumps
+            {t.equipmentTitle || "Nearby Farm Machinery & Equipment Sharing"}
           </h2>
           <p className="text-xs sm:text-sm text-teal-100/90 max-w-3xl leading-relaxed">
-            Instead of every smallholder buying a ₹7 Lakh tractor or ₹12 Lakh harvester, rent equipment on demand from nearby farmers. Reduce your cultivation expenses by up to 45%.
+            {t.equipmentSubtitle || "Rent tractors, harvesters, and solar pumps strictly from nearby farmers within your immediate village cluster. Low mobilization distance means fast delivery and zero heavy road haulage charges."}
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2 text-xs">
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-white/15">
-              <span className="text-amber-300 font-bold">45% Cost Reduction</span> in Land Preparation
+              <span className="text-amber-300 font-bold">📍 Strictly Hyperlocal</span> Fast 15-40 min Delivery
             </div>
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-white/15">
-              <span className="text-emerald-300 font-bold">Earn Extra Income</span> Renting Your Idle Machinery
+              <span className="text-emerald-300 font-bold">45% Savings</span> vs Commercial Aggregators
             </div>
             <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-white/15">
-              <span className="text-teal-300 font-bold">Escrow Verified</span> Safe Deposits
+              <span className="text-teal-300 font-bold">Neighbor Escrow</span> Secure Farmer Verification
             </div>
           </div>
         </div>
       </div>
 
-      {/* Equipment Listings */}
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
-            Nearby Available Farm Equipment ({equipmentList.length} Active Listings)
-          </h3>
-          <button
-            onClick={() => alert('List your equipment: Enter Tractor/Harvester model & hourly rate. Your listing will go live on the cluster network.')}
-            className="px-3.5 py-1.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-xs transition cursor-pointer flex items-center gap-1.5"
-          >
-            <span>➕</span>
-            <span>List My Machinery</span>
-          </button>
+      {/* Distance Radius Filter Bar */}
+      <div className="bg-white dark:bg-[#131d31] p-4 sm:p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+            {t.distanceFilterLabel || "Filter by Distance:"}
+          </span>
+          <div className="flex gap-1.5 overflow-x-auto w-full sm:w-auto">
+            {[
+              { label: t.within3km || 'Within 3 km (Nearest)', km: 3 },
+              { label: t.within5km || 'Within 5 km', km: 5 },
+              { label: t.within10km || 'Within 10 km', km: 10 },
+              { label: t.allNearby || 'All Nearby (< 15 km)', km: 15 }
+            ].map((dist) => (
+              <button
+                key={dist.km}
+                onClick={() => setSelectedRadius(dist.km)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap ${
+                  selectedRadius === dist.km
+                    ? 'bg-teal-900 text-white shadow-sm ring-1 ring-teal-600'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                {dist.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {equipmentList.map((eq) => (
+        <span className="text-xs font-mono font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-3 py-1 rounded-full border border-teal-200 dark:border-teal-800">
+          Showing {filteredEquipment.length} Machinery Units within {selectedRadius} km
+        </span>
+      </div>
+
+      {/* Nearby Equipment Listings Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {filteredEquipment.length === 0 ? (
+          <div className="col-span-2 py-16 text-center text-slate-400 space-y-2 bg-white dark:bg-[#131d31] rounded-3xl border border-slate-200 dark:border-slate-800">
+            <div className="text-4xl">🚜</div>
+            <p className="font-bold text-slate-600 dark:text-slate-300 text-sm">No equipment found within {selectedRadius} km</p>
+            <p className="text-xs">Try increasing the distance radius to 5 km or 10 km to find neighboring machinery.</p>
+          </div>
+        ) : (
+          filteredEquipment.map((eq) => (
             <div
               key={eq.id}
               className="bg-white dark:bg-[#131d31] p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-teal-400 dark:hover:border-teal-500 shadow-sm transition-all duration-200 flex flex-col justify-between space-y-4"
             >
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-950/80 text-teal-900 dark:text-teal-200 flex items-center justify-center text-2xl flex-shrink-0">
-                    {eq.avatar}
-                  </div>
-                  <div>
-                    <span className="font-mono text-[10px] font-bold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/40 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
-                      {eq.id}
-                    </span>
-                    <h4 className="font-extrabold text-base text-slate-900 dark:text-white leading-tight mt-0.5">
-                      {eq.name}
-                    </h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Owner: {eq.ownerFarmer} • {eq.ownerVillage}
-                    </p>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-950/80 text-teal-900 dark:text-teal-200 flex items-center justify-center text-2xl flex-shrink-0">
+                      {eq.avatar}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-[10px] font-bold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-900/40 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
+                          {eq.id}
+                        </span>
+                        <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                          📍 {eq.distanceKm} km away
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-base text-slate-900 dark:text-white leading-tight mt-1">
+                        {eq.name}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        Owner: {eq.ownerFarmer} • {eq.ownerVillage}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -159,9 +244,9 @@ function EquipmentSharingTab({ currentUser }) {
                     <span>Hourly Rate:</span>
                     <span>₹{eq.hourlyRent} / hour</span>
                   </div>
-                  <div className="flex justify-between text-slate-500 text-[11px]">
-                    <span>Equipment Specs:</span>
-                    <span className="italic">{eq.condition}</span>
+                  <div className="flex justify-between text-teal-700 dark:text-teal-400 font-semibold">
+                    <span>Estimated Transit Time:</span>
+                    <span>⚡ {eq.estimatedArrival}</span>
                   </div>
                 </div>
 
@@ -178,11 +263,11 @@ function EquipmentSharingTab({ currentUser }) {
                 className="w-full py-2.5 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-bold text-xs shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>📅</span>
-                <span>Rent This Equipment (₹{eq.dailyRent}/day)</span>
+                <span>{t.rentBtn || "Rent This Equipment"} (₹{eq.dailyRent}/day)</span>
               </button>
             </div>
-          ))}
-        </div>
+          ))
+        )}
       </div>
 
       {/* Booking Modal */}
@@ -207,8 +292,12 @@ function EquipmentSharingTab({ currentUser }) {
             <form onSubmit={handleConfirmBooking} className="space-y-4 text-xs">
               <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200 dark:border-slate-700 space-y-1">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Owner:</span>
+                  <span className="text-slate-500">Nearby Owner:</span>
                   <strong>{bookingItem.ownerFarmer} ({bookingItem.ownerVillage})</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Distance:</span>
+                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">📍 {bookingItem.distanceKm} km away</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">Daily Rate:</span>
@@ -245,7 +334,7 @@ function EquipmentSharingTab({ currentUser }) {
                 className="w-full py-3 rounded-2xl bg-gradient-to-r from-teal-700 to-emerald-800 hover:from-teal-800 hover:to-emerald-900 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>🔒</span>
-                <span>Confirm Machinery Booking</span>
+                <span>Confirm Hyperlocal Machinery Booking</span>
               </button>
             </form>
           </div>

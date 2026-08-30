@@ -1,354 +1,337 @@
-function BuyerStoreTab({ 
-  lots, 
-  onAddToCart, 
-  onInstantBuy, 
-  onOpenCertificate, 
-  cartItemCount, 
+function BuyerStoreTab({
+  lots,
+  onAddToCart,
+  onInstantBuy,
+  onOpenCertificate,
+  cartItemCount,
   onOpenCart,
   orders = [],
-  showOrdersOnly = false
+  showOrdersOnly = false,
+  lang = 'en'
 }) {
   const { useState, useMemo } = React;
+  const t = (window.TRANSLATIONS && window.TRANSLATIONS[lang]) || window.TRANSLATIONS?.en || {};
 
+  const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('featured');
-  const [selectedLotForModal, setSelectedLotForModal] = useState(null);
-  const [modalQty, setModalQty] = useState(50);
+  const [selectedLotForBuy, setSelectedLotForBuy] = useState(null);
+  const [instantBuyQty, setInstantBuyQty] = useState(50);
 
-  const categories = ['All', 'Fruits', 'Vegetables', 'Pulses'];
-
+  // Filter produce lots
   const filteredLots = useMemo(() => {
     return lots.filter((lot) => {
-      const matchCat = selectedCategory === 'All' || lot.category === selectedCategory;
-      const matchSearch = 
+      const matchesCategory = activeCategory === 'All' || lot.category === activeCategory;
+      const matchesQuery =
         lot.crop.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lot.farmer.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lot.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lot.lot.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchCat && matchSearch;
-    }).sort((a, b) => {
-      if (sortBy === 'price-low') return a.pricePerKg - b.pricePerKg;
-      if (sortBy === 'price-high') return b.pricePerKg - a.pricePerKg;
-      if (sortBy === 'qty') return b.availableQty - a.availableQty;
-      return 0;
+        lot.farmer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (lot.description && lot.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCategory && matchesQuery;
     });
-  }, [lots, searchQuery, selectedCategory, sortBy]);
+  }, [lots, activeCategory, searchQuery]);
 
-  const handleOpenBuyModal = (lot) => {
-    setSelectedLotForModal(lot);
-    setModalQty(lot.minOrderKg || 50);
+  const handleOpenInstantBuy = (lot) => {
+    setSelectedLotForBuy(lot);
+    setInstantBuyQty(lot.minOrderKg || 30);
   };
 
-  // If viewing orders
-  if (showOrdersOnly) {
-    return (
-      <div className="space-y-6">
-        <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-emerald-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold">
-              📦 My Orders & Cold-Chain Escrow Tracking
-            </span>
-            <h2 className="text-2xl font-extrabold">Active Buyer Procurement Orders</h2>
-            <p className="text-xs sm:text-sm text-teal-100/80">Track farmgate dispatch, Reefer cold-chain telemetry, and automated delivery verification.</p>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 space-y-4">
-          <h3 className="font-extrabold text-base text-slate-900">Your Active Deliveries ({orders.length})</h3>
-          {orders.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 space-y-2">
-              <div className="text-4xl">🛒</div>
-              <p className="font-bold text-slate-600">No active orders placed yet</p>
-              <p className="text-xs">Browse the storefront and order fresh farmgate produce under smart escrow.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {orders.map((ord, idx) => (
-                <div key={ord.orderId || idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="font-mono font-bold text-xs text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                        {ord.orderId || `ORD-${8800 + idx}`}
-                      </span>
-                      <h4 className="font-extrabold text-sm text-slate-900 mt-1">{ord.crop}</h4>
-                      <p className="text-xs text-slate-500">From: {ord.farmerName || 'Ramesh Patra'} ({ord.location || 'Sakhigopal'})</p>
-                    </div>
-                    <span className="px-2 py-0.5 bg-emerald-600 text-white rounded font-bold text-[10px]">
-                      {ord.status || 'Escrow Locked (100%)'}
-                    </span>
-                  </div>
-
-                  <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Volume:</span>
-                      <strong>{ord.qty} kg</strong>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">Escrow Total:</span>
-                      <strong>₹{(ord.totalAmount || ord.qty * ord.pricePerKg * 1.09).toLocaleString('en-IN')}</strong>
-                    </div>
-                    <div className="flex justify-between text-teal-700">
-                      <span>Transit Reefer:</span>
-                      <span>Tata 709 Reefer (4.8°C)</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
+  const handleConfirmInstantBuy = (e) => {
+    e.preventDefault();
+    if (!selectedLotForBuy) return;
+    onInstantBuy(selectedLotForBuy, instantBuyQty);
+    setSelectedLotForBuy(null);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Buyer Banner */}
-      <div className="bg-gradient-to-r from-teal-950 via-slate-900 to-emerald-950 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="relative z-10 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-400/20 text-teal-300 text-xs font-semibold border border-teal-400/30">
-            <span>🛒 Buyer E-Commerce Storefront</span>
-            <span>•</span>
-            <span>Farmgate Direct Verified Fresh Produce</span>
+    <div className="space-y-6 animate-in fade-in duration-200">
+      {/* Hero Banner */}
+      {!showOrdersOnly && (
+        <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+          <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="relative z-10 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-400/20 text-emerald-300 text-xs font-semibold border border-emerald-400/30">
+              <span>🛒 Direct Consumer & Retail Marketplace</span>
+              <span>•</span>
+              <span>100% Farmgate Freshness</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              {t.buyerStoreTitle || "Procure Fresh Farmgate Produce Directly From Farmers"}
+            </h2>
+            <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
+              Every harvest lot is spectral-scanned for Brix sweetness, harvested at sunrise, and shipped via temperature-controlled solar reefer cold vans. Zero middleman markup.
+            </p>
+
+            <div className="flex flex-wrap gap-3 pt-2 text-xs">
+              <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-white/15">
+                <span className="text-amber-300 font-bold">25% Cheaper</span> than Retail Supermarkets
+              </div>
+              <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-xl border border-white/15">
+                <span className="text-emerald-300 font-bold">100% Escrow Protection</span> Only Pay Upon Gate Scan
+              </div>
+            </div>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            Procure Fresh, AI-Certified Produce Directly From Farmers
-          </h2>
-          <p className="text-xs sm:text-sm text-teal-100/90 max-w-3xl leading-relaxed">
-            Eliminate commission agent markups and spoilage losses. Source 100% farmgate-assayed fruits, vegetables, and pulses directly from FPOs delivered in unbroken cold reefer chains.
-          </p>
+        </div>
+      )}
 
-          <div className="flex flex-wrap gap-4 pt-1 text-xs">
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-emerald-300 font-bold">100% Smart Escrow</span> Guaranteed Delivery
+      {/* SEARCH AND CATEGORY BAR */}
+      {!showOrdersOnly && (
+        <div className="bg-white dark:bg-[#131d31] p-4 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="relative w-full sm:w-96">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔍</span>
+              <input
+                type="text"
+                placeholder={t.searchPlaceholder || "Search vegetables, fruits, pulses, or district..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-[#1a253c] text-xs font-semibold text-slate-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+              />
             </div>
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-teal-300 font-bold">Cold Chain Reefer</span> Zero Spoilage
-            </div>
-            <div className="bg-white/10 backdrop-blur-xs px-3.5 py-1.5 rounded-lg border border-white/15">
-              <span className="text-amber-300 font-bold">Bulk Discounts</span> For Institutional Orders
+
+            <div className="flex gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+              {[
+                { id: 'All', label: t.allCommodities || 'All Commodities' },
+                { id: 'Vegetables', label: t.vegetables || 'Vegetables' },
+                { id: 'Fruits', label: t.fruits || 'Fruits' },
+                { id: 'Pulses', label: t.pulses || 'Pulses & Grains' }
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-4 py-2 rounded-2xl font-bold text-xs whitespace-nowrap transition cursor-pointer ${
+                    activeCategory === cat.id
+                      ? 'bg-emerald-900 text-white shadow-sm ring-1 ring-emerald-700'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Search & Category Filter Bar */}
-      <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Search */}
-        <div className="relative w-full md:w-80">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
-          <input
-            type="text"
-            placeholder="Search crop, farmer, or district..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl text-xs border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
-          />
-        </div>
-
-        {/* Category Pills */}
-        <div className="flex gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                selectedCategory === cat
-                  ? 'bg-emerald-900 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-              }`}
-            >
-              {cat === 'All' ? 'All Commodities' : cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Sort & Cart Button */}
-        <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-1.5 rounded-xl text-xs border border-slate-200 bg-slate-50 font-medium text-slate-700 focus:outline-none cursor-pointer"
-          >
-            <option value="featured">Featured Lots</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="qty">Available Volume</option>
-          </select>
-
-          <button
-            onClick={onOpenCart}
-            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs shadow-sm transition-all cursor-pointer flex items-center gap-1.5"
-          >
-            <span>🛒 Cart ({cartItemCount})</span>
-          </button>
-        </div>
-      </div>
-
-      {/* E-Commerce Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {filteredLots.map((lot) => {
-          return (
+      {/* PRODUCE LOTS GRID (STOREFRONT) */}
+      {!showOrdersOnly && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredLots.map((lot) => (
             <div
               key={lot.id}
-              className="bg-white rounded-2xl border border-slate-200 hover:border-emerald-400 hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col justify-between group"
+              className="bg-white dark:bg-[#131d31] rounded-3xl border border-slate-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 shadow-sm transition-all duration-200 overflow-hidden flex flex-col justify-between"
             >
-              {/* Card Top: Image + Badges */}
-              <div className="space-y-3 p-4">
-                <div className="relative aspect-4/3 rounded-xl overflow-hidden bg-slate-900">
+              <div>
+                <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <img
                     src={lot.image}
                     alt={lot.crop}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    loading="lazy"
                   />
-                  <div className="absolute top-2 left-2 bg-emerald-950/80 backdrop-blur-xs text-emerald-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded border border-emerald-500/40">
-                    {lot.lot}
+                  <div className="absolute top-3 left-3 flex gap-1.5">
+                    <span className="px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-xs text-white font-mono text-[10px] font-bold">
+                      {lot.lot}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-700 text-white text-[10px] font-bold">
+                      {lot.category || 'Fresh'}
+                    </span>
                   </div>
-                  <div className="absolute top-2 right-2 bg-amber-400 text-slate-950 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
-                    {lot.grade}
-                  </div>
-                  <div className="absolute bottom-2 left-2 right-2 bg-slate-950/80 backdrop-blur-xs text-white text-[11px] px-2.5 py-1 rounded-lg flex justify-between items-center">
-                    <span className="text-emerald-400 font-bold">Brix: {lot.brix}</span>
-                    <span className="text-slate-300">Defect: {lot.defectPct}</span>
+
+                  <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-emerald-950/95 text-amber-300 font-black text-sm shadow-md">
+                    ₹{lot.pricePerKg} <span className="text-[10px] font-normal text-emerald-200">/ kg</span>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div>
-                  <h4 className="font-extrabold text-base text-slate-900 leading-snug group-hover:text-emerald-800 transition-colors">
-                    {lot.crop}
-                  </h4>
-                  <p className="text-xs text-slate-500 font-medium">{lot.farmer} • {lot.fpo}</p>
-                  <p className="text-[11px] text-slate-400">📍 {lot.location}</p>
-                </div>
+                <div className="p-5 space-y-3">
+                  <div>
+                    <h3 className="font-extrabold text-base text-slate-900 dark:text-white leading-tight">
+                      {lot.crop}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      Farmer: <strong className="text-slate-700 dark:text-slate-300">{lot.farmer}</strong> • {lot.location}
+                    </p>
+                  </div>
 
-                {/* Price & Quantity Box */}
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs space-y-1.5">
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500">Available Stock:</span>
-                    <strong className="text-slate-900 text-xs">{lot.availableQty} {lot.unit}</strong>
-                  </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-slate-500">Direct Price:</span>
-                    <span className="text-base font-extrabold text-emerald-800">₹{lot.pricePerKg} / {lot.unit}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-400 line-through text-[11px]">
-                    <span>Mandi Trader Offer:</span>
-                    <span>₹{lot.mandiPrice} / {lot.unit}</span>
-                  </div>
-                  <div className="pt-1 border-t border-slate-200 text-[10px] text-teal-700 flex justify-between font-semibold">
-                    <span>Wholesale (&gt;500kg):</span>
-                    <span>₹{lot.bulkPricePerKg} / kg</span>
+                  <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">
+                    {lot.description}
+                  </p>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200/80 dark:border-slate-700/60 text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Available Volume:</span>
+                      <strong className="text-slate-900 dark:text-white">{lot.availableQty || lot.qty} kg</strong>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Brix / Quality Score:</span>
+                      <span className="text-emerald-700 dark:text-emerald-400 font-bold">{lot.brix} ({lot.grade})</span>
+                    </div>
+                    <div className="flex justify-between text-teal-700 dark:text-teal-300">
+                      <span>Cold Chain Status:</span>
+                      <span>❄️ {lot.coolingStatus}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Card Actions */}
-              <div className="p-4 pt-0 space-y-2">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => onAddToCart(lot, lot.minOrderKg || 50)}
-                    className="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <span>🛒</span>
-                    <span>Add to Cart</span>
-                  </button>
+              <div className="p-5 pt-0 grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => onAddToCart(lot, lot.minOrderKg || 30)}
+                  className="py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>🛒</span>
+                  <span>{t.addToCart || "Add to Cart"}</span>
+                </button>
 
-                  <button
-                    onClick={() => handleOpenBuyModal(lot)}
-                    className="flex-1 py-2.5 rounded-xl bg-emerald-800 hover:bg-emerald-900 active:bg-emerald-950 text-white font-bold text-xs shadow-xs transition cursor-pointer flex items-center justify-center gap-1"
-                  >
-                    <span>⚡</span>
-                    <span>Instant Buy</span>
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleOpenInstantBuy(lot)}
+                  className="py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs shadow-sm transition cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>⚡</span>
+                  <span>{t.instantBuy || "Instant Buy"}</span>
+                </button>
               </div>
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* VIEW: MY ORDERS & REEFER TRANSIT TRACKING */}
+      {showOrdersOnly && (
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+              {t.tabBuyerOrders || "My Orders & Escrow Tracking"} ({orders.length} Active)
+            </h3>
+            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full">
+              ● 100% Escrow Protected
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {orders.map((ord, idx) => (
+              <div
+                key={idx}
+                className="bg-white dark:bg-[#131d31] p-5 sm:p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <div>
+                    <span className="font-mono text-[10px] font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-900/40 px-2 py-0.5 rounded">
+                      {ord.orderId}
+                    </span>
+                    <h4 className="font-extrabold text-base text-slate-900 dark:text-white mt-1">
+                      {ord.crop} ({ord.qty} kg)
+                    </h4>
+                    <p className="text-xs text-slate-500">
+                      Farmer: <strong>{ord.farmerName}</strong> • {ord.location}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-lg font-black text-emerald-700 dark:text-emerald-400">
+                      ₹{ord.totalAmount.toLocaleString('en-IN')}
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
+                      {ord.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c]">
+                    <span className="text-slate-400 block mb-1">Temperature-Controlled Logistics:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">{ord.reeferId}</strong>
+                    <span className="text-teal-600 block mt-0.5">Live Temp: {ord.tempCelsius}</span>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-[#1a253c]">
+                    <span className="text-slate-400 block mb-1">Payment Settlement:</span>
+                    <strong className="text-emerald-700 dark:text-emerald-400">Smart Escrow Vault</strong>
+                    <span className="text-slate-500 block mt-0.5">Automated release upon farmgate scan</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Instant Buy Modal */}
-      {selectedLotForModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+      {selectedLotForBuy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-[#131d31] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800">
+            <div className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">⚡</span>
-                <h3 className="font-extrabold text-base text-slate-900">
-                  Instant Smart Escrow Checkout
+                <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+                  Direct Escrow Procurement
                 </h3>
               </div>
               <button
-                onClick={() => setSelectedLotForModal(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold text-sm cursor-pointer"
+                onClick={() => setSelectedLotForBuy(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center font-bold text-sm cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
-              <div className="flex gap-3 items-center p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <img src={selectedLotForModal.image} alt={selectedLotForModal.crop} className="w-12 h-12 rounded-lg object-cover" />
-                <div>
-                  <h4 className="font-bold text-sm text-slate-900">{selectedLotForModal.crop}</h4>
-                  <p className="text-slate-500">{selectedLotForModal.farmer} ({selectedLotForModal.location})</p>
-                  <span className="text-emerald-700 font-bold">₹{selectedLotForModal.pricePerKg} / kg</span>
+            <form onSubmit={handleConfirmInstantBuy} className="space-y-4 text-xs">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1a253c] border border-slate-200 dark:border-slate-700 space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Produce:</span>
+                  <strong>{selectedLotForBuy.crop}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Farmer:</span>
+                  <span>{selectedLotForBuy.farmer} ({selectedLotForBuy.location})</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Price:</span>
+                  <strong className="text-emerald-700 dark:text-emerald-400">₹{selectedLotForBuy.pricePerKg} / kg</strong>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">
-                  Select Purchase Volume (Quantity in kg):
+                <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Procurement Volume (kg):
                 </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
-                    min={selectedLotForModal.minOrderKg || 10}
-                    max={selectedLotForModal.availableQty}
-                    value={modalQty}
-                    onChange={(e) => setModalQty(Number(e.target.value))}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 font-bold text-sm"
+                    min={selectedLotForBuy.minOrderKg || 10}
+                    max={selectedLotForBuy.availableQty || selectedLotForBuy.qty}
+                    required
+                    value={instantBuyQty}
+                    onChange={(e) => setInstantBuyQty(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 font-bold text-sm bg-white dark:bg-[#1a253c] text-slate-900 dark:text-white"
                   />
                   <span className="font-bold text-slate-500">kg</span>
                 </div>
               </div>
 
-              {/* Price Calculation */}
-              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1.5 text-xs text-slate-800">
-                <div className="flex justify-between">
-                  <span>Produce Subtotal ({modalQty} kg × ₹{selectedLotForModal.pricePerKg}):</span>
-                  <strong>₹{(modalQty * selectedLotForModal.pricePerKg).toLocaleString('en-IN')}</strong>
+              <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-1">
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                  <span>Produce Value ({instantBuyQty} kg × ₹{selectedLotForBuy.pricePerKg}):</span>
+                  <span>₹{(instantBuyQty * selectedLotForBuy.pricePerKg).toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-teal-700">
-                  <span>Reefer Cold Transit Logistics (7%):</span>
-                  <span>₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 0.07).toLocaleString('en-IN')}</span>
+                <div className="flex justify-between text-slate-600 dark:text-slate-300">
+                  <span>Reefer Cold Chain Transit (9%):</span>
+                  <span>₹{Math.round(instantBuyQty * selectedLotForBuy.pricePerKg * 0.09).toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Smart Escrow Guarantee (2%):</span>
-                  <span>₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 0.02).toLocaleString('en-IN')}</span>
-                </div>
-                <div className="pt-2 border-t border-emerald-200 flex justify-between font-extrabold text-sm text-emerald-950">
-                  <span>Total Escrow Payable:</span>
-                  <span className="text-base text-emerald-800">
-                    ₹{Math.round(modalQty * selectedLotForModal.pricePerKg * 1.09).toLocaleString('en-IN')}
-                  </span>
+                <div className="flex justify-between text-emerald-800 dark:text-emerald-300 font-extrabold text-sm pt-1 border-t border-emerald-200 dark:border-emerald-800">
+                  <span>Total Escrow Lock:</span>
+                  <span>₹{Math.round(instantBuyQty * selectedLotForBuy.pricePerKg * 1.09).toLocaleString('en-IN')}</span>
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={() => {
-                onInstantBuy(selectedLotForModal, modalQty);
-                setSelectedLotForModal(null);
-              }}
-              className="w-full py-3 rounded-xl bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <span>🔒</span>
-              <span>Lock Escrow & Confirm Order</span>
-            </button>
+              <button
+                type="submit"
+                className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>🔒</span>
+                <span>Deposit in Escrow & Dispatch Reefer Van</span>
+              </button>
+            </form>
           </div>
         </div>
       )}

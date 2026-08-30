@@ -5,7 +5,23 @@ function App() {
   const commodities = window.COMMODITIES || [];
   const cvPresets = window.CV_PRESETS || [];
 
-  // Theme Management (Light / Dark)
+  // 1. Language State (English, Hindi, Odia)
+  const [lang, setLang] = useState(() => {
+    try {
+      return localStorage.getItem('kisansetu_lang') || 'en';
+    } catch (e) {
+      return 'en';
+    }
+  });
+
+  const handleLanguageChange = (newLang) => {
+    setLang(newLang);
+    try {
+      localStorage.setItem('kisansetu_lang', newLang);
+    } catch (e) {}
+  };
+
+  // 2. Theme State (Light / Dark)
   const [theme, setTheme] = useState(() => {
     try {
       return localStorage.getItem('kisansetu_theme') || 'light';
@@ -25,7 +41,7 @@ function App() {
     setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  // Authentication State
+  // 3. Authentication & Strict Role Enforcement
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('kisansetu_user');
@@ -50,7 +66,7 @@ function App() {
       buyerLocation: 'Bhubaneswar Hub-2',
       buyerAvatar: '🏬',
       crop: 'Alphonso Mango (Amrapali)',
-      lotId: 'LOT-4410',
+      lotId: 'LOT-9921',
       farmerName: 'Ramesh Patra',
       location: 'Sakhigopal, Puri',
       qty: 500,
@@ -69,7 +85,7 @@ function App() {
       buyerLocation: 'Jaydev Vihar Kitchen',
       buyerAvatar: '🏨',
       crop: 'Hybrid Red Tomatoes',
-      lotId: 'REQ-1082',
+      lotId: 'LOT-8821',
       farmerName: 'Ramesh Patra',
       location: 'Sakhigopal, Puri',
       qty: 250,
@@ -88,9 +104,9 @@ function App() {
       buyerLocation: 'Patia Campus',
       buyerAvatar: '🎓',
       crop: 'Fresh Potatoes & Onions',
-      lotId: 'REQ-1079',
-      farmerName: 'Ramesh Patra',
-      location: 'Sakhigopal, Puri',
+      lotId: 'LOT-7714',
+      farmerName: 'Dhiren Swain',
+      location: 'Nimapada, Puri',
       qty: 800,
       pricePerKg: 24,
       farmerPayout: 19200,
@@ -123,6 +139,7 @@ function App() {
     }
     if (currentUser) {
       setUserRole(currentUser.role);
+      // Strictly set default tab for the logged-in role
       if (currentUser.role === 'farmer') setTab('farmer');
       else if (currentUser.role === 'buyer') setTab('buyer');
       else if (currentUser.role === 'bulk') setTab('bulk');
@@ -162,7 +179,7 @@ function App() {
       role: 'buyer',
       name: 'Guest Explorer',
       subtitle: 'Open Marketplace Access',
-      badge: 'Guest User',
+      badge: 'Guest Buyer',
       avatar: '🌐'
     };
     handleLogin(guestUser);
@@ -231,7 +248,7 @@ function App() {
       window.confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
     }
 
-    const newOrders = cart.map((item, i) => ({
+    const newOrders = cart.map((item) => ({
       orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
       buyerName: currentUser ? currentUser.name : 'Verified Retail Buyer',
       buyerType: currentUser ? currentUser.badge : 'Customer',
@@ -328,7 +345,7 @@ function App() {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(sample.response);
-        u.lang = sample.ttsLang || 'en-US';
+        u.lang = lang === 'hi' ? 'hi-IN' : (lang === 'or' ? 'hi-IN' : 'en-US');
         u.rate = 0.95;
         window.speechSynthesis.speak(u);
       }
@@ -341,6 +358,7 @@ function App() {
       <window.LoginPage 
         onLogin={handleLogin} 
         onGuestAccess={handleGuestAccess} 
+        lang={lang}
       />
     ) : (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white p-4">
@@ -370,13 +388,14 @@ function App() {
           onOpenVoice={() => setShowVoiceModal(true)}
           isOpenMobile={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          lang={lang}
         />
       )}
 
       {/* 2. RIGHT MAIN CONTENT AREA */}
       <div className="lg:pl-72 flex-1 flex flex-col min-w-0">
         
-        {/* Top Header Bar */}
+        {/* Top Header Bar with 3-Way Language Switcher */}
         {window.Header && (
           <window.Header 
             currentUser={currentUser}
@@ -388,6 +407,8 @@ function App() {
             theme={theme}
             onToggleTheme={toggleTheme}
             onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+            lang={lang}
+            onLanguageChange={handleLanguageChange}
           />
         )}
 
@@ -395,13 +416,14 @@ function App() {
         {window.RateAnnouncementBar && (
           <window.RateAnnouncementBar 
             onOpenVoice={() => setShowVoiceModal(true)}
+            lang={lang}
           />
         )}
 
-        {/* Active Section Content View */}
+        {/* Active Section Content View (STRICT ROLE RESTRICTION) */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto space-y-6">
           
-          {/* ================= FARMER ROLE SECTIONS ================= */}
+          {/* ================= FARMER ROLE SECTIONS ONLY ================= */}
           {userRole === 'farmer' && (
             <>
               {tab === 'farmer' && window.FarmerPortalTab && (
@@ -411,30 +433,33 @@ function App() {
                   onOpenCertificate={() => setShowCertModal(true)}
                   onOpenScanner={() => setTab('scanner')}
                   orders={orders}
+                  lang={lang}
+                  onTriggerSimulatedOrder={(o) => setOrders((prev) => [o, ...prev])}
                 />
               )}
 
               {tab === 'reverse' && window.ReverseMarketplaceTab && (
                 <window.ReverseMarketplaceTab 
                   currentUser={currentUser} 
-                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)}
+                  lang={lang}
                 />
               )}
 
-              {tab === 'pooling' && window.TransportPoolingTab && (
-                <window.TransportPoolingTab currentUser={currentUser} />
-              )}
-
               {tab === 'advisor' && window.SellNowAdvisorTab && (
-                <window.SellNowAdvisorTab />
+                <window.SellNowAdvisorTab lang={lang} />
               )}
 
               {tab === 'waste' && window.WasteToMoneyTab && (
-                <window.WasteToMoneyTab currentUser={currentUser} />
+                <window.WasteToMoneyTab currentUser={currentUser} lang={lang} />
+              )}
+
+              {tab === 'pooling' && window.TransportPoolingTab && (
+                <window.TransportPoolingTab currentUser={currentUser} lang={lang} />
               )}
 
               {tab === 'equipment' && window.EquipmentSharingTab && (
-                <window.EquipmentSharingTab currentUser={currentUser} />
+                <window.EquipmentSharingTab currentUser={currentUser} lang={lang} />
               )}
 
               {tab === 'scanner' && window.ScannerTab && (
@@ -444,25 +469,23 @@ function App() {
                   isScanning={isScanning}
                   onTriggerScan={handleTriggerScan}
                   onOpenCertificate={() => setShowCertModal(true)}
+                  lang={lang}
                 />
-              )}
-
-              {tab === 'logistics' && window.LogisticsTab && (
-                <window.LogisticsTab />
               )}
 
               {tab === 'market' && window.MarketplaceTab && (
                 <window.MarketplaceTab 
                   selectedCrop={selectedCrop}
                   setSelectedCrop={setSelectedCrop}
-                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 30)}
                   userRole={userRole}
+                  lang={lang}
                 />
               )}
             </>
           )}
 
-          {/* ================= RETAIL BUYER ROLE SECTIONS ================= */}
+          {/* ================= RETAIL BUYER ROLE SECTIONS ONLY ================= */}
           {userRole === 'buyer' && (
             <>
               {tab === 'buyer' && window.BuyerStoreTab && (
@@ -475,6 +498,7 @@ function App() {
                   onOpenCart={() => setIsCartOpen(true)}
                   orders={orders}
                   showOrdersOnly={false}
+                  lang={lang}
                 />
               )}
 
@@ -488,13 +512,15 @@ function App() {
                   onOpenCart={() => setIsCartOpen(true)}
                   orders={orders}
                   showOrdersOnly={true}
+                  lang={lang}
                 />
               )}
 
               {tab === 'reverse' && window.ReverseMarketplaceTab && (
                 <window.ReverseMarketplaceTab 
                   currentUser={currentUser} 
-                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)}
+                  lang={lang}
                 />
               )}
 
@@ -502,48 +528,47 @@ function App() {
                 <window.MarketplaceTab 
                   selectedCrop={selectedCrop}
                   setSelectedCrop={setSelectedCrop}
-                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 30)}
                   userRole={userRole}
+                  lang={lang}
                 />
               )}
             </>
           )}
 
-          {/* ================= BULK B2B DESK ROLE SECTIONS ================= */}
+          {/* ================= BULK B2B DESK ROLE SECTIONS ONLY ================= */}
           {userRole === 'bulk' && (
             <>
               {tab === 'bulk' && window.BulkBuyerTab && (
                 <window.BulkBuyerTab 
                   lots={lots}
                   onExecuteBulkContract={(c) => alert(`Bulk contract locked for ${c.crop}!`)}
+                  lang={lang}
                 />
               )}
 
               {tab === 'reverse' && window.ReverseMarketplaceTab && (
                 <window.ReverseMarketplaceTab 
                   currentUser={currentUser} 
-                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)} 
+                  onAcceptDemand={(d) => alert(`Supply locked for ${d.crop}!`)}
+                  lang={lang}
                 />
               )}
 
               {tab === 'forecast' && window.ForecastTab && (
-                <window.ForecastTab />
+                <window.ForecastTab lang={lang} />
               )}
 
               {tab === 'waste' && window.WasteToMoneyTab && (
-                <window.WasteToMoneyTab currentUser={currentUser} />
+                <window.WasteToMoneyTab currentUser={currentUser} lang={lang} />
               )}
 
               {tab === 'pooling' && window.TransportPoolingTab && (
-                <window.TransportPoolingTab currentUser={currentUser} />
-              )}
-
-              {tab === 'logistics' && window.LogisticsTab && (
-                <window.LogisticsTab />
+                <window.TransportPoolingTab currentUser={currentUser} lang={lang} />
               )}
 
               {tab === 'macro' && window.MacroTab && (
-                <window.MacroTab />
+                <window.MacroTab lang={lang} />
               )}
             </>
           )}
@@ -551,7 +576,7 @@ function App() {
         </main>
 
         {/* Footer Division */}
-        {window.Footer && <window.Footer />}
+        {window.Footer && <window.Footer lang={lang} />}
 
       </div>
 
@@ -564,6 +589,7 @@ function App() {
           onUpdateQty={handleUpdateCartQty}
           onRemoveItem={handleRemoveCartItem}
           onCheckout={handleCheckout}
+          lang={lang}
         />
       )}
 
@@ -575,6 +601,7 @@ function App() {
           voiceListening={voiceListening}
           voiceResponse={voiceResponse}
           onTriggerVoice={handleTriggerVoice}
+          lang={lang}
         />
       )}
 
@@ -583,6 +610,7 @@ function App() {
           isOpen={showCertModal}
           onClose={() => setShowCertModal(false)}
           preset={selectedPreset}
+          lang={lang}
         />
       )}
 

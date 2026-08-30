@@ -1,481 +1,228 @@
-function LoginPage({ onLogin, onGuestAccess }) {
+function LoginPage({ onLogin, onGuestAccess, lang = 'en' }) {
   const { useState } = React;
+  const t = (window.TRANSLATIONS && window.TRANSLATIONS[lang]) || window.TRANSLATIONS?.en || {};
 
-  const [activeRole, setActiveRole] = useState('farmer'); // 'farmer' | 'buyer' | 'bulk'
-  const [isRegister, setIsRegister] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
+  const [activePersona, setActivePersona] = useState('farmer'); // 'farmer', 'buyer', 'bulk'
+  const [phoneNumber, setPhoneNumber] = useState('9861233410');
+  const [password, setPassword] = useState('kisan123');
 
-  // Farmer form state
-  const [farmerForm, setFarmerForm] = useState({
-    name: 'Ramesh Patra',
-    phone: '9861233410',
-    fpo: 'Sakhigopal Farmers Producer Co.',
-    district: 'Puri, Odisha',
-    cropSpecialty: 'Alphonso & Amrapali Mangoes',
-    landSize: '4.5 Acres'
-  });
-
-  // Customer / Retail Buyer form state
-  const [buyerForm, setBuyerForm] = useState({
-    name: 'Ananya Sharma',
-    phone: '9437188902',
-    email: 'ananya.sharma@gmail.com',
-    city: 'Bhubaneswar, Odisha',
-    buyerType: 'Household / Community Group'
-  });
-
-  // Bulk Institutional Buyer form state
-  const [bulkForm, setBulkForm] = useState({
-    companyName: 'ITC Foods & Agri Division',
-    gstin: '21AAACI1681G1ZM',
-    contactPerson: 'Siddharth Patnaik',
-    phone: '9861099441',
-    email: 'procurement@itc.in',
-    procurementHub: 'Bhubaneswar Central Cold Hub'
-  });
-
-  const [otpInput, setOtpInput] = useState('4821');
-
-  // Pre-configured Demo Accounts for 1-Click Login
-  const DEMO_PROFILES = [
+  // Pre-configured 1-Click Demo Profiles for Seamless Testing
+  const demoProfiles = [
     {
       role: 'farmer',
-      title: 'Farmer / FPO Partner',
       name: 'Ramesh Patra',
-      subtitle: 'Sakhigopal FPO (4.5 Acres)',
-      phone: '+91 98612-33410',
-      badge: 'Verified Producer',
-      avatar: '👨‍🌾',
-      bgGradient: 'from-emerald-600 to-teal-700'
+      subtitle: 'Verified Smallholder Producer (Puri Cluster)',
+      avatar: '🌾',
+      badge: 'Farmgate Producer',
+      location: 'Sakhigopal, Puri',
+      acres: '3.5 Acres (Drip Irrigated)',
+      phone: '9861233410',
+      description: 'Access the Farmer Dashboard, live buyer orders, AI harvest advisor, equipment sharing, and waste-to-money marketplace.'
     },
     {
       role: 'buyer',
-      title: 'Retail Customer / Buyer',
       name: 'Ananya Sharma',
-      subtitle: 'Bhubaneswar Consumer Desk',
-      phone: '+91 94371-88902',
-      badge: 'Verified Buyer',
+      subtitle: 'Retail & Household Buyer',
       avatar: '🛒',
-      bgGradient: 'from-amber-500 to-orange-600'
+      badge: 'Verified Retail Customer',
+      location: 'Bhubaneswar Metro Hub',
+      acres: 'Direct Consumer Account',
+      phone: '9437011882',
+      description: 'Browse fresh farmgate lots, track cold reefer delivery, and buy with 100% smart escrow security.'
     },
     {
       role: 'bulk',
-      title: 'Institutional Bulk Buyer',
-      name: 'ITC Agri Procurement',
-      subtitle: 'GSTIN Verified • 50+ Tonnes',
-      phone: '+91 98610-99441',
-      badge: 'Corporate Escrow',
+      name: 'ITC Foods & Agri Procurement',
+      subtitle: 'Institutional B2B Processor',
       avatar: '🏢',
-      bgGradient: 'from-slate-800 to-slate-950'
+      badge: 'Institutional Desk',
+      location: 'Cuttack Food Park',
+      acres: 'Multi-Ton Commercial Buyer',
+      phone: '9861055443',
+      description: 'Post recurring HoReCa demands, negotiate multi-ton forward contracts, and coordinate factory supply.'
     }
   ];
 
-  const handleQuickDemo = (profile) => {
-    if (profile.role === 'farmer') {
-      onLogin({
-        role: 'farmer',
-        name: profile.name,
-        subtitle: profile.subtitle,
-        phone: profile.phone,
-        badge: profile.badge,
-        avatar: profile.avatar,
-        fpo: 'Sakhigopal Farmers Producer Co.',
-        location: 'Sakhigopal, Puri'
-      });
-    } else if (profile.role === 'buyer') {
-      onLogin({
-        role: 'buyer',
-        name: profile.name,
-        subtitle: profile.subtitle,
-        phone: profile.phone,
-        badge: profile.badge,
-        avatar: profile.avatar,
-        location: 'Bhubaneswar, Odisha'
-      });
-    } else {
-      onLogin({
-        role: 'bulk',
-        name: profile.name,
-        subtitle: profile.subtitle,
-        phone: profile.phone,
-        badge: profile.badge,
-        avatar: profile.avatar,
-        company: 'ITC Foods & Agri Business',
-        location: 'Bhubaneswar Metro Hub'
-      });
-    }
-  };
-
-  const handleCustomSubmit = (e) => {
+  const handleCustomLogin = (e) => {
     e.preventDefault();
-    if (!otpSent) {
-      setOtpSent(true);
-      return;
-    }
-
-    // OTP Verified
-    if (activeRole === 'farmer') {
-      onLogin({
-        role: 'farmer',
-        name: farmerForm.name,
-        subtitle: `${farmerForm.fpo} (${farmerForm.district})`,
-        phone: `+91 ${farmerForm.phone}`,
-        badge: 'Verified Producer',
-        avatar: '👨‍🌾',
-        fpo: farmerForm.fpo,
-        location: farmerForm.district
-      });
-    } else if (activeRole === 'buyer') {
-      onLogin({
-        role: 'buyer',
-        name: buyerForm.name,
-        subtitle: buyerForm.city,
-        phone: `+91 ${buyerForm.phone}`,
-        badge: 'Verified Buyer',
-        avatar: '🛒',
-        location: buyerForm.city
-      });
-    } else {
-      onLogin({
-        role: 'bulk',
-        name: bulkForm.companyName,
-        subtitle: `${bulkForm.contactPerson} • ${bulkForm.procurementHub}`,
-        phone: `+91 ${bulkForm.phone}`,
-        badge: 'Corporate B2B',
-        avatar: '🏢',
-        company: bulkForm.companyName,
-        location: bulkForm.procurementHub
-      });
-    }
+    const matchedProfile = demoProfiles.find((p) => p.role === activePersona) || demoProfiles[0];
+    onLogin({
+      ...matchedProfile,
+      phone: phoneNumber
+    });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-950 flex flex-col justify-between text-slate-100 p-4 sm:p-6 selection:bg-emerald-300 selection:text-emerald-950">
+    <div className="min-h-screen bg-[#f7f9f6] dark:bg-[#0b1120] text-slate-900 dark:text-slate-100 flex flex-col justify-between p-4 sm:p-6 transition-colors duration-200">
       
-      {/* Top Sovereign Bar */}
-      <div className="max-w-6xl mx-auto w-full flex items-center justify-between py-2 border-b border-emerald-800/40 text-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-amber-400 flex items-center justify-center text-slate-950 font-extrabold text-lg shadow-sm">
+      {/* Top Brand Header */}
+      <div className="max-w-6xl w-full mx-auto flex items-center justify-between py-2">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-amber-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-emerald-950/20">
             🌾
           </div>
           <div>
-            <span className="font-extrabold text-white text-sm tracking-tight">Kisan Setu</span>
-            <span className="text-[10px] ml-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              v2.4 Sovereign
-            </span>
+            <div className="flex items-center gap-2">
+              <h1 className="font-extrabold text-xl tracking-tight text-emerald-950 dark:text-emerald-300">
+                {t.brandName || "Kisan Setu"}
+              </h1>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 font-bold">
+                Role Gateway
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {t.brandSubtitle || "Sovereign Agritech Rails"}
+            </p>
           </div>
         </div>
 
         <button
           onClick={onGuestAccess}
-          className="text-xs text-slate-400 hover:text-emerald-300 transition underline underline-offset-4 cursor-pointer"
+          className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition cursor-pointer px-3 py-1.5 rounded-xl bg-white dark:bg-[#131d31] border border-slate-200 dark:border-slate-800 shadow-2xs"
         >
-          Explore as Guest (Direct Marketplace) →
+          Explore as Guest ➔
         </button>
       </div>
 
-      {/* Main Authentication Card */}
-      <div className="max-w-4xl mx-auto w-full my-6 bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-9 text-slate-900 shadow-2xl border border-white/20 space-y-6">
+      {/* Main Login Card Container */}
+      <div className="max-w-4xl w-full mx-auto my-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
         
-        {/* Title Header */}
-        <div className="text-center space-y-2 max-w-xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
-            <span>🛡️ Sovereign AI Agricultural Gateway</span>
+        {/* Left Side: 1-Click Fast Role Selection */}
+        <div className="md:col-span-7 space-y-4">
+          <div className="space-y-2">
+            <span className="text-xs font-extrabold tracking-wider uppercase text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800 inline-block">
+              Role-Scoped Access Control
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Select Your Role to Access Your Dedicated Portal
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Login to view only the tools and data relevant to your profile.
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-emerald-950 tracking-tight">
-            Welcome to Kisan Setu
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Direct farmer-to-buyer disintermediated agritech ecosystem. Select your persona to login or register.
-          </p>
-        </div>
 
-        {/* 1-Click Quick Demo Login Switcher */}
-        <div className="space-y-2">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block text-center">
-            ⚡ Quick 1-Click Demo Profiles (Instant Access):
-          </span>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {DEMO_PROFILES.map((profile, i) => (
-              <button
-                key={i}
-                onClick={() => handleQuickDemo(profile)}
-                className="p-3.5 rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-md bg-slate-50/80 hover:bg-emerald-50/50 transition-all text-left flex items-start gap-3 cursor-pointer group"
-              >
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${profile.bgGradient} text-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform`}>
-                  {profile.avatar}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.2 rounded">
-                      {profile.badge}
-                    </span>
+          {/* Role Cards List */}
+          <div className="space-y-3 pt-2">
+            {demoProfiles.map((p) => {
+              const isSelected = activePersona === p.role;
+              return (
+                <div
+                  key={p.role}
+                  onClick={() => {
+                    setActivePersona(p.role);
+                    setPhoneNumber(p.phone);
+                  }}
+                  className={`p-4 rounded-3xl border transition-all duration-200 cursor-pointer flex items-start justify-between gap-4 ${
+                    isSelected
+                      ? 'bg-emerald-900 text-white border-emerald-600 shadow-lg shadow-emerald-950/20 ring-2 ring-emerald-500'
+                      : 'bg-white dark:bg-[#131d31] border-slate-200 dark:border-slate-800 hover:border-emerald-400 text-slate-800 dark:text-slate-200 shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${
+                      isSelected ? 'bg-emerald-800' : 'bg-slate-100 dark:bg-slate-800'
+                    }`}>
+                      {p.avatar}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-extrabold text-sm truncate">{p.name}</h4>
+                        <span className={`text-[10px] font-bold px-2 py-0.2 rounded-full ${
+                          isSelected ? 'bg-amber-400 text-slate-950' : 'bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200'
+                        }`}>
+                          {p.badge}
+                        </span>
+                      </div>
+                      <p className={`text-xs mt-0.5 truncate ${isSelected ? 'text-emerald-200' : 'text-slate-500 dark:text-slate-400'}`}>
+                        {p.subtitle} • {p.location}
+                      </p>
+                      <p className={`text-[11px] mt-1.5 line-clamp-2 ${isSelected ? 'text-slate-200' : 'text-slate-600 dark:text-slate-300'}`}>
+                        {p.description}
+                      </p>
+                    </div>
                   </div>
-                  <h4 className="font-extrabold text-xs text-slate-900 truncate mt-0.5">
-                    {profile.name}
-                  </h4>
-                  <p className="text-[11px] text-slate-500 truncate">{profile.subtitle}</p>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onLogin(p);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl font-bold text-xs whitespace-nowrap transition cursor-pointer flex-shrink-0 ${
+                      isSelected
+                        ? 'bg-amber-400 hover:bg-amber-500 text-slate-950 shadow-sm'
+                        : 'bg-slate-100 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white text-slate-700 dark:text-slate-300'
+                    }`}
+                  >
+                    1-Click Login ➔
+                  </button>
                 </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="relative flex items-center justify-center">
-          <div className="border-t border-slate-200 w-full"></div>
-          <span className="bg-white px-3 text-[11px] text-slate-400 font-bold uppercase tracking-wider">
-            Or Login with Your Custom Credentials
-          </span>
-        </div>
+        {/* Right Side: Credential Form Box */}
+        <div className="md:col-span-5 bg-white dark:bg-[#131d31] p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-extrabold text-base text-slate-900 dark:text-white">
+              Secure OTP / Password Login
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Role: <strong className="text-emerald-600 dark:text-emerald-400 uppercase">{activePersona}</strong>
+            </p>
+          </div>
 
-        {/* Role Tab Selector */}
-        <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto">
-          <button
-            onClick={() => { setActiveRole('farmer'); setOtpSent(false); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeRole === 'farmer'
-                ? 'bg-emerald-800 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>👨‍🌾</span>
-            <span>Farmer / FPO</span>
-          </button>
-          <button
-            onClick={() => { setActiveRole('buyer'); setOtpSent(false); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeRole === 'buyer'
-                ? 'bg-emerald-800 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🛒</span>
-            <span>Retail Buyer</span>
-          </button>
-          <button
-            onClick={() => { setActiveRole('bulk'); setOtpSent(false); }}
-            className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-              activeRole === 'bulk'
-                ? 'bg-emerald-800 text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <span>🏢</span>
-            <span>Bulk B2B Desk</span>
-          </button>
-        </div>
-
-        {/* Custom Role Form */}
-        <form onSubmit={handleCustomSubmit} className="max-w-xl mx-auto space-y-4 text-xs">
-          
-          {/* FARMER FORM */}
-          {activeRole === 'farmer' && (
-            <div className="space-y-3 animate-in fade-in duration-150">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Farmer Full Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={farmerForm.name}
-                    onChange={(e) => setFarmerForm({ ...farmerForm, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. Ramesh Patra"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Mobile / Aadhaar-linked No:</label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-2.5 rounded-l-xl border border-r-0 border-slate-200 bg-slate-50 text-slate-500 font-mono">
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      required
-                      value={farmerForm.phone}
-                      onChange={(e) => setFarmerForm({ ...farmerForm, phone: e.target.value })}
-                      className="w-full px-3 py-2 rounded-r-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Associated FPO / Collective:</label>
-                  <input
-                    type="text"
-                    required
-                    value={farmerForm.fpo}
-                    onChange={(e) => setFarmerForm({ ...farmerForm, fpo: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. Sakhigopal Farmers Producer Co."
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">District / Farmgate Location:</label>
-                  <input
-                    type="text"
-                    required
-                    value={farmerForm.district}
-                    onChange={(e) => setFarmerForm({ ...farmerForm, district: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. Puri, Odisha"
-                  />
-                </div>
+          <form onSubmit={handleCustomLogin} className="space-y-4 text-xs">
+            <div>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Mobile Number / Aadhaar UID:
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">+91</span>
+                <input
+                  type="text"
+                  required
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="Enter 10-digit mobile number"
+                  className="w-full pl-12 pr-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1a253c] text-slate-900 dark:text-white font-bold focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
+                />
               </div>
             </div>
-          )}
 
-          {/* RETAIL BUYER FORM */}
-          {activeRole === 'buyer' && (
-            <div className="space-y-3 animate-in fade-in duration-150">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Buyer / Customer Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={buyerForm.name}
-                    onChange={(e) => setBuyerForm({ ...buyerForm, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. Ananya Sharma"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Email Address:</label>
-                  <input
-                    type="email"
-                    required
-                    value={buyerForm.email}
-                    onChange={(e) => setBuyerForm({ ...buyerForm, email: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="name@example.com"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Mobile Number:</label>
-                  <div className="flex">
-                    <span className="inline-flex items-center px-2.5 rounded-l-xl border border-r-0 border-slate-200 bg-slate-50 text-slate-500 font-mono">
-                      +91
-                    </span>
-                    <input
-                      type="tel"
-                      required
-                      value={buyerForm.phone}
-                      onChange={(e) => setBuyerForm({ ...buyerForm, phone: e.target.value })}
-                      className="w-full px-3 py-2 rounded-r-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                      placeholder="10-digit number"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Delivery City / Hub:</label>
-                  <input
-                    type="text"
-                    required
-                    value={buyerForm.city}
-                    onChange={(e) => setBuyerForm({ ...buyerForm, city: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. Bhubaneswar, Odisha"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* BULK B2B DESK FORM */}
-          {activeRole === 'bulk' && (
-            <div className="space-y-3 animate-in fade-in duration-150">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Company / Entity Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={bulkForm.companyName}
-                    onChange={(e) => setBulkForm({ ...bulkForm, companyName: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                    placeholder="e.g. ITC Foods / BigBasket"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Corporate GSTIN Number:</label>
-                  <input
-                    type="text"
-                    required
-                    value={bulkForm.gstin}
-                    onChange={(e) => setBulkForm({ ...bulkForm, gstin: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-mono"
-                    placeholder="21AAACI1681G1ZM"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Procurement Manager Name:</label>
-                  <input
-                    type="text"
-                    required
-                    value={bulkForm.contactPerson}
-                    onChange={(e) => setBulkForm({ ...bulkForm, contactPerson: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                  />
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Central Cold Hub:</label>
-                  <input
-                    type="text"
-                    required
-                    value={bulkForm.procurementHub}
-                    onChange={(e) => setBulkForm({ ...bulkForm, procurementHub: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 font-medium"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* OTP Verification Step if triggered */}
-          {otpSent && (
-            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2 animate-in fade-in slide-in-from-top-2">
-              <div className="flex justify-between items-center">
-                <span className="font-bold text-emerald-900 text-xs">Enter 4-Digit OTP Code:</span>
-                <span className="text-[10px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                  Demo OTP: 4821
-                </span>
-              </div>
+            <div>
+              <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
+                Security PIN / Password:
+              </label>
               <input
-                type="text"
-                maxLength="4"
+                type="password"
                 required
-                value={otpInput}
-                onChange={(e) => setOtpInput(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl border border-emerald-300 font-mono font-bold text-center text-base tracking-widest bg-white"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-[#1a253c] text-slate-900 dark:text-white font-bold focus:outline-hidden focus:ring-2 focus:ring-emerald-500"
               />
             </div>
-          )}
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <span>{otpSent ? '✓ Verify OTP & Enter Ecosystem' : '📲 Send OTP & Secure Login'}</span>
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-bold text-xs shadow-md transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>🔓</span>
+              <span>Enter Portal as {activePersona === 'farmer' ? 'Farmer' : activePersona === 'buyer' ? 'Retail Buyer' : 'Bulk Buyer'}</span>
+            </button>
+          </form>
+
+          <div className="pt-2 text-center text-[11px] text-slate-400">
+            Smart Escrow & OTP Protection by UIDAI & NPCI
+          </div>
+        </div>
 
       </div>
 
-      {/* Footer Sovereign Tag */}
-      <div className="max-w-6xl mx-auto w-full text-center text-[11px] text-slate-400 py-2">
-        Kisan Setu Sovereign Platform • 100% Smart Escrow Protection • Powered by Google Antigravity 2.0
+      {/* Footer Disclaimer */}
+      <div className="max-w-4xl w-full mx-auto text-center text-xs text-slate-400 dark:text-slate-500 py-2">
+        Kisan Setu • Disintermediated Sovereign Agritech Ecosystem
       </div>
 
     </div>
