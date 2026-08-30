@@ -39,6 +39,7 @@ function App() {
   const [lots, setLots] = useState(initialLots);
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Live Orders Stream (Who is Buying the Produce)
   const [orders, setOrders] = useState([
@@ -230,7 +231,6 @@ function App() {
       window.confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
     }
 
-    // Add items from cart to live orders stream
     const newOrders = cart.map((item, i) => ({
       orderId: `ORD-${Math.floor(1000 + Math.random() * 9000)}`,
       buyerName: currentUser ? currentUser.name : 'Verified Retail Buyer',
@@ -353,144 +353,162 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col transition-colors duration-200">
-      {/* Top Header Division */}
-      {window.Header && (
-        <window.Header 
+    <div className="min-h-screen flex bg-[#f7f9f6] dark:bg-[#0b1120] text-[#1e293b] dark:text-[#f1f5f9] transition-colors duration-200">
+      
+      {/* 1. VERTICAL LEFT SIDEBAR */}
+      {window.Sidebar && (
+        <window.Sidebar
+          activeTab={tab}
+          onTabChange={setTab}
+          userRole={userRole}
           currentUser={currentUser}
           onLogout={handleLogout}
-          userRole={userRole} 
-          onOpenVoice={() => setShowVoiceModal(true)}
-          onTabChange={setTab}
-          cartItemCount={cart.length}
-          onOpenCart={() => setIsCartOpen(true)}
           theme={theme}
           onToggleTheme={toggleTheme}
-        />
-      )}
-
-      {/* AI Live Rate Announcement Bar */}
-      {window.RateAnnouncementBar && (
-        <window.RateAnnouncementBar 
+          cartItemCount={cart.length}
+          onOpenCart={() => setIsCartOpen(true)}
           onOpenVoice={() => setShowVoiceModal(true)}
+          isOpenMobile={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
         />
       )}
 
-      {/* Navigation Tabs Division (Strict Role Isolation) */}
-      {window.Navbar && (
-        <window.Navbar 
-          activeTab={tab} 
-          onTabChange={setTab} 
-          userRole={userRole}
-        />
-      )}
-
-      {/* Active Division View (Strict Role Permission Enforcement) */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 py-6 sm:py-8 w-full">
+      {/* 2. RIGHT MAIN CONTENT AREA */}
+      <div className="lg:pl-72 flex-1 flex flex-col min-w-0">
         
-        {/* ================= FARMER ROLE SECTIONS ================= */}
-        {userRole === 'farmer' && (
-          <>
-            {tab === 'farmer' && window.FarmerPortalTab && (
-              <window.FarmerPortalTab 
-                lots={lots}
-                onAddLot={handleAddLot}
-                onOpenCertificate={() => setShowCertModal(true)}
-                onOpenScanner={() => setTab('scanner')}
-                orders={orders}
-              />
-            )}
-
-            {tab === 'scanner' && window.ScannerTab && (
-              <window.ScannerTab 
-                selectedPreset={selectedPreset}
-                setSelectedPreset={setSelectedPreset}
-                isScanning={isScanning}
-                onTriggerScan={handleTriggerScan}
-                onOpenCertificate={() => setShowCertModal(true)}
-              />
-            )}
-
-            {tab === 'logistics' && window.LogisticsTab && (
-              <window.LogisticsTab />
-            )}
-
-            {tab === 'market' && window.MarketplaceTab && (
-              <window.MarketplaceTab 
-                selectedCrop={selectedCrop}
-                setSelectedCrop={setSelectedCrop}
-                onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
-                userRole={userRole}
-              />
-            )}
-          </>
+        {/* Top Header Bar */}
+        {window.Header && (
+          <window.Header 
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            userRole={userRole} 
+            onOpenVoice={() => setShowVoiceModal(true)}
+            cartItemCount={cart.length}
+            onOpenCart={() => setIsCartOpen(true)}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+          />
         )}
 
-        {/* ================= RETAIL BUYER ROLE SECTIONS ================= */}
-        {userRole === 'buyer' && (
-          <>
-            {tab === 'buyer' && window.BuyerStoreTab && (
-              <window.BuyerStoreTab 
-                lots={lots}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onOpenCertificate={() => setShowCertModal(true)}
-                cartItemCount={cart.length}
-                onOpenCart={() => setIsCartOpen(true)}
-                orders={orders}
-                showOrdersOnly={false}
-              />
-            )}
-
-            {tab === 'buyer-orders' && window.BuyerStoreTab && (
-              <window.BuyerStoreTab 
-                lots={lots}
-                onAddToCart={handleAddToCart}
-                onInstantBuy={handleInstantBuy}
-                onOpenCertificate={() => setShowCertModal(true)}
-                cartItemCount={cart.length}
-                onOpenCart={() => setIsCartOpen(true)}
-                orders={orders}
-                showOrdersOnly={true}
-              />
-            )}
-
-            {tab === 'market' && window.MarketplaceTab && (
-              <window.MarketplaceTab 
-                selectedCrop={selectedCrop}
-                setSelectedCrop={setSelectedCrop}
-                onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
-                userRole={userRole}
-              />
-            )}
-          </>
+        {/* AI Live Rate Announcement Bar */}
+        {window.RateAnnouncementBar && (
+          <window.RateAnnouncementBar 
+            onOpenVoice={() => setShowVoiceModal(true)}
+          />
         )}
 
-        {/* ================= BULK B2B DESK ROLE SECTIONS ================= */}
-        {userRole === 'bulk' && (
-          <>
-            {tab === 'bulk' && window.BulkBuyerTab && (
-              <window.BulkBuyerTab 
-                lots={lots}
-                onExecuteBulkContract={(c) => alert(`Bulk contract locked for ${c.crop}!`)}
-              />
-            )}
+        {/* Active Section Content View */}
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-7xl w-full mx-auto">
+          
+          {/* ================= FARMER ROLE SECTIONS ================= */}
+          {userRole === 'farmer' && (
+            <>
+              {tab === 'farmer' && window.FarmerPortalTab && (
+                <window.FarmerPortalTab 
+                  lots={lots}
+                  onAddLot={handleAddLot}
+                  onOpenCertificate={() => setShowCertModal(true)}
+                  onOpenScanner={() => setTab('scanner')}
+                  orders={orders}
+                />
+              )}
 
-            {tab === 'forecast' && window.ForecastTab && (
-              <window.ForecastTab />
-            )}
+              {tab === 'scanner' && window.ScannerTab && (
+                <window.ScannerTab 
+                  selectedPreset={selectedPreset}
+                  setSelectedPreset={setSelectedPreset}
+                  isScanning={isScanning}
+                  onTriggerScan={handleTriggerScan}
+                  onOpenCertificate={() => setShowCertModal(true)}
+                />
+              )}
 
-            {tab === 'logistics' && window.LogisticsTab && (
-              <window.LogisticsTab />
-            )}
+              {tab === 'logistics' && window.LogisticsTab && (
+                <window.LogisticsTab />
+              )}
 
-            {tab === 'macro' && window.MacroTab && (
-              <window.MacroTab />
-            )}
-          </>
-        )}
+              {tab === 'market' && window.MarketplaceTab && (
+                <window.MarketplaceTab 
+                  selectedCrop={selectedCrop}
+                  setSelectedCrop={setSelectedCrop}
+                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                  userRole={userRole}
+                />
+              )}
+            </>
+          )}
 
-      </main>
+          {/* ================= RETAIL BUYER ROLE SECTIONS ================= */}
+          {userRole === 'buyer' && (
+            <>
+              {tab === 'buyer' && window.BuyerStoreTab && (
+                <window.BuyerStoreTab 
+                  lots={lots}
+                  onAddToCart={handleAddToCart}
+                  onInstantBuy={handleInstantBuy}
+                  onOpenCertificate={() => setShowCertModal(true)}
+                  cartItemCount={cart.length}
+                  onOpenCart={() => setIsCartOpen(true)}
+                  orders={orders}
+                  showOrdersOnly={false}
+                />
+              )}
+
+              {tab === 'buyer-orders' && window.BuyerStoreTab && (
+                <window.BuyerStoreTab 
+                  lots={lots}
+                  onAddToCart={handleAddToCart}
+                  onInstantBuy={handleInstantBuy}
+                  onOpenCertificate={() => setShowCertModal(true)}
+                  cartItemCount={cart.length}
+                  onOpenCart={() => setIsCartOpen(true)}
+                  orders={orders}
+                  showOrdersOnly={true}
+                />
+              )}
+
+              {tab === 'market' && window.MarketplaceTab && (
+                <window.MarketplaceTab 
+                  selectedCrop={selectedCrop}
+                  setSelectedCrop={setSelectedCrop}
+                  onExecuteEscrow={(l) => handleInstantBuy(l, l.minOrderKg || 50)}
+                  userRole={userRole}
+                />
+              )}
+            </>
+          )}
+
+          {/* ================= BULK B2B DESK ROLE SECTIONS ================= */}
+          {userRole === 'bulk' && (
+            <>
+              {tab === 'bulk' && window.BulkBuyerTab && (
+                <window.BulkBuyerTab 
+                  lots={lots}
+                  onExecuteBulkContract={(c) => alert(`Bulk contract locked for ${c.crop}!`)}
+                />
+              )}
+
+              {tab === 'forecast' && window.ForecastTab && (
+                <window.ForecastTab />
+              )}
+
+              {tab === 'logistics' && window.LogisticsTab && (
+                <window.LogisticsTab />
+              )}
+
+              {tab === 'macro' && window.MacroTab && (
+                <window.MacroTab />
+              )}
+            </>
+          )}
+
+        </main>
+
+        {/* Footer Division */}
+        {window.Footer && <window.Footer />}
+
+      </div>
 
       {/* Slide-over Cart Drawer (Only for Buyers) */}
       {(userRole === 'buyer' || userRole === 'bulk') && window.CartDrawer && (
@@ -523,8 +541,6 @@ function App() {
         />
       )}
 
-      {/* Footer Division */}
-      {window.Footer && <window.Footer />}
     </div>
   );
 }
